@@ -690,6 +690,12 @@ KRB-AEAD
 .
 \end_layout
 
+\begin_layout Standard
+TBD: do we allow interleaved plaintext and associated data (which SSPI does
+ and indeed requires for DCE), or do we limit it to a single octet string
+ each.
+\end_layout
+
 \begin_layout Subsection
 GSS_Wrap_IOV
 \end_layout
@@ -732,8 +738,18 @@ KRB-AEAD
 ), and where the cipherstate length is at least 12 octets (96 bits).
  Such profiles where the cipherstate length is less than 12 octets MUST
  NOT be used.
- The output cipherstate from the encrypt-with-ad and decrypt-with-ad functions
- is discarded.
+ Because these mechanisms may only be used with ephemeral session keys,
+ they SHOULD only be negotiated in GSS-API via 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC4537
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -741,8 +757,8 @@ Application-provided Cipherstate
 \end_layout
 
 \begin_layout Standard
-The cipherstate (initialization vector) for each per-message token is given
- as follows:
+The cipherstate (initialization vector) for each invocation of encrypt-with-ad
+ or decrypt-with-ad is given as follows:
 \end_layout
 
 \begin_layout Standard
@@ -935,29 +951,8 @@ KRB-4121
 \end_layout
 
 \begin_layout Standard
-This mechanism cannot be used with 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-KRB-AEAD
-\end_layout
-
-\end_inset
-
- .
- Because these mechanisms may only be used with ephemeral session keys,
- they SHOULD only be negotiated in GSS-API via 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-RFC4537
-\end_layout
-
-\end_inset
-
-.
+The output cipherstate from the encrypt-with-ad and decrypt-with-ad functions
+ is discarded as it is always specified explicitly by the caller.
 \end_layout
 
 \begin_layout Subsection
@@ -999,8 +994,8 @@ RFC4121
 \end_inset
 
  section 4.2.6) SHALL NOT be appended to the plaintext data before encryption.
- Instead, the TOK_ID, Flags and SND_SEQ fields are protected by the initializati
-on vector.
+ Instead, the TOK_ID, Flags and SND_SEQ fields of the token header are protected
+ by the initialization vector.
  The EC field is unprotected, a change from 
 \begin_inset Flex EntityXRef
 status open
@@ -1011,7 +1006,8 @@ RFC4121
 
 \end_inset
 
-; however, because it is a constant value, the receiver MUST validate it.
+; however, because it is a constant value, it can be validated by the receiver.
+ The receiver MUST validate the EC field.
  For the AEAD encryption types defined in 
 \begin_inset Flex EntityXRef
 status open
@@ -1050,8 +1046,8 @@ Because native AEAD encryption types lack an explicit checksum operation,
  MIC tokens are generated similarly to Wrap tokens, using the encrypt-with-ad
  function passing the to-be-signed data as the associated data and using
  a plaintext length of zero.
- Both the key usage number and initialization vector serves to disambiguate
- MIC from Wrap tokens.
+ Even though the same derived key is used, the key usage number and initializati
+on vector serve to disambiguate MIC from Wrap tokens.
  In this case the octet string output by the encrypt-with-ad function contains
  the authentication tag, which is placed in the SGN_CKSUM field of the token.
 \end_layout
@@ -1074,6 +1070,8 @@ STYLE always set EC for Wrap tokens with confidentiality to the underlying
  This document does not specify otherwise.
  When GSS_C_DCE_STYLE is set, implementations MUST verify that the otherwise
  unprotected EC field is the underlying cipher's block size.
+ (For Wrap tokens without confidentiality, the EC field remains the length
+ of the authentication tag.)
 \end_layout
 
 \begin_layout Section
@@ -1082,6 +1080,19 @@ Security Considerations
 
 \begin_layout Standard
 TBD
+\end_layout
+
+\begin_layout Standard
+The combination of a context-specific session key and the presence of the
+ the TOK_ID and SND_SEQ fields in the cipherstate guarantees that the key/IV
+ combination is safe from reuse.
+ The allows modes like GCM to be used securely.
+\end_layout
+
+\begin_layout Standard
+Because the initialization vector has a deterministic (but non-repeating)
+ construction, it is safe for use with GCM without any limitation on the
+ number of invocations of the authenticated encryption function.
 \end_layout
 
 \begin_layout Section

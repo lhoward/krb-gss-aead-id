@@ -923,8 +923,8 @@ i: Counter, expressed as four octets in big endian order
 
 \begin_layout Plain Layout
 
-k: Length in bits of the key to be outputted, expressed as four octets in
- big endian order
+k: Length in bits of the key to be outputted, identical to the length of
+ the initial key, expressed as four octets in big endian order
 \end_layout
 
 \begin_layout Plain Layout
@@ -965,7 +965,7 @@ Ki = CMAC(key, K(i-1) | i | label | 0x00 | k)
 
 \begin_layout Plain Layout
 
-KDF-CMAC(key, label, k) = k-truncate(K1 | K2...)
+KDF-CMAC(key, label) = k-truncate(K1 | K2...)
 \end_layout
 
 \end_inset
@@ -1054,7 +1054,7 @@ reference "sub:Key-Derivation-Function"
 \end_layout
 
 \begin_layout Standard
-Ke = KDF-CMAC(base-key, usage | 0xAA, 128)
+Ke = KDF-CMAC(base-key, usage | 0xAA)
 \end_layout
 
 \begin_layout Standard
@@ -1078,6 +1078,10 @@ encrypt-with-ad function: AES encryption in GCM mode
 decrypt-with-ad function: AES decryption in GCM mode
 \end_layout
 
+\begin_layout Standard
+pseudo random function: PRF = KDF-CMAC(base-key, "prf" | octet-string)
+\end_layout
+
 \begin_layout Subsection
 aes256-gcm-128
 \end_layout
@@ -1085,6 +1089,10 @@ aes256-gcm-128
 \begin_layout Standard
 As for aes128-gcm-128, but using AES-256 as the block cipher and with a
  key length of 32 octets (256 bits).
+\end_layout
+
+\begin_layout Standard
+PRF = KDF-CMAC(base-key, "prf" | octet-string, 256)
 \end_layout
 
 \begin_layout Subsection
