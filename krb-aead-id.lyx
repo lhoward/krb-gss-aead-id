@@ -1096,7 +1096,7 @@ initial cipherstate: all bits zero, or specified by application
 
 \begin_layout Standard
 subsequent cipherstate: if not specified by application, then octets 4..11
- are used as a 64-bit counter in big endian order (independent of the GCM
+ are used as a 64-bit counter in big endian order (independent of the block
  counter in octets 12..15)
 \end_layout
 
@@ -1217,7 +1217,7 @@ initial cipherstate: all bits zero, or specified by application
 
 \begin_layout Standard
 subsequent cipherstate: if not specified by application, then octets 5..12
- are used as a 64-bit counter in big endian order (independent of the CCM
+ are used as a 64-bit counter in big endian order (independent of the block
  counter in octets 13..15)
 \end_layout
 
