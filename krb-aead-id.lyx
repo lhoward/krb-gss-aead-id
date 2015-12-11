@@ -1,0 +1,1330 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass docbook
+\use_default_options true
+\maintain_unincluded_children false
+\begin_local_layout
+Format 31
+
+InsetLayout Flex:PI_Strict
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_Strict
+End
+
+InsetLayout Flex:PI
+    LyXType Custom
+    HTMLTag div
+    LabelString PI
+End
+
+InsetLayout Flex:PI_SymRefs
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_SymRefs
+End
+
+InsetLayout Flex:PI_SortRefs
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_SortRefs
+End
+
+InsetLayout Flex:PI_TOC
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_TOC
+End
+
+InsetLayout Flex:PI_TOCIndent
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_TOCIndent
+End
+
+InsetLayout Flex:PI_TOCDepth
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_TOCDepth
+End
+
+InsetLayout Flex:PI_TOCNarrow
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_TOCNarrow
+End
+
+InsetLayout Flex:PI_TOCCompact
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_TOCCompact
+End
+
+InsetLayout Flex:PI_TOCAppendix
+    LyXType Custom
+    HTMLTag div
+    LabelString PI_TOCAppendix
+End
+
+InsetLayout Flex:DocName
+    LyXType Custom
+    HTMLTag div
+    LabelString DocName
+End
+
+InsetLayout Flex:IntendedStatus
+    LyXType Custom
+    HTMLTag div
+    LabelString IntendedStatus
+End
+
+InsetLayout Flex:Updates
+    LyXType Custom
+    HTMLTag div
+    LabelString Updates
+End
+
+InsetLayout Flex:Obsoletes
+    LyXType Custom
+    HTMLTag div
+    LabelString Obsoletes
+End
+
+InsetLayout Flex:SeriesNo
+    LyXType Custom
+    HTMLTag div
+    LabelString SeriesNo
+End
+
+InsetLayout Flex:RFCNumber
+    LyXType Custom
+    HTMLTag div
+    LabelString RFCNumber
+End
+
+InsetLayout Flex:IPR
+    LyXType Custom
+    HTMLTag div
+    LabelString IPR
+End
+
+InsetLayout Flex:IETFArea
+    LyXType Custom
+    HTMLTag div
+    LabelString IETFArea
+End
+
+InsetLayout Flex:IETFWorkingGroup
+    LyXType Custom
+    HTMLTag div
+    LabelString IETFWorkingGroup
+End
+
+InsetLayout Flex:XML2RFCKeyword
+    LyXType Custom
+    HTMLTag div
+    LabelString XML2RFCKeyword
+End
+
+InsetLayout Flex:TitleAbbrev
+    LyXType Custom
+    HTMLTag div
+    LabelString TitleAbbrev
+End
+
+InsetLayout Flex:AuthorRole
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthRole
+End
+
+InsetLayout Flex:AuthorInitials
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthInitials
+End
+
+InsetLayout Flex:AuthorSurname
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthSurname
+End
+
+InsetLayout Flex:AuthorOrg
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthOrg
+End
+
+InsetLayout Flex:AuthorOrgAbbrev
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthOrgAbbrev
+End
+
+InsetLayout Flex:AuthorEmailAddr
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthEmailAddr
+End
+
+InsetLayout Flex:AuthorAddrStreet
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthAddrStreet
+End
+
+InsetLayout Flex:AuthorAddrCity
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthAddrCity
+End
+
+InsetLayout Flex:AuthorAddrRegion
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthAddrRegion
+End
+
+InsetLayout Flex:AuthorAddrCode
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthAddrCode
+End
+
+InsetLayout Flex:AuthorAddrCountry
+    LyXType Custom
+    HTMLTag div
+    LabelString AuthAddrCountry
+End
+
+InsetLayout Flex:EntityXRef
+    LyXType Custom
+    HTMLTag div
+    LabelString EntityXRef
+End
+
+InsetLayout Flex:BibXML
+    LyXType Custom
+    HTMLTag div
+    LabelString BibXML
+End
+
+InsetLayout Flex:EmbeddedBibXML
+    LyXType Custom
+    HTMLTag div
+    LabelString EmbeddedBibXML
+End
+\end_local_layout
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman cmr
+\font_sans cmss
+\font_typewriter cmtt
+\font_default_family ttdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+AEAD Encryption Types for Kerberos 5
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex DocName
+status open
+
+\begin_layout Plain Layout
+draft-howard-krb-aead-00.txt
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex IPR
+status open
+
+\begin_layout Plain Layout
+trust200902
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex IntendedStatus
+status open
+
+\begin_layout Plain Layout
+exp
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex TitleAbbrev
+status open
+
+\begin_layout Plain Layout
+AEAD Encryption Types for Kerberos 5
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex IETFArea
+status open
+
+\begin_layout Plain Layout
+Security Area
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex XML2RFCKeyword
+status open
+
+\begin_layout Plain Layout
+Internet-Draft
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex Updates
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex PI TOC
+status open
+
+\begin_layout Plain Layout
+yes
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex PI SymRefs
+status open
+
+\begin_layout Plain Layout
+yes
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex PI TOCIndent
+status open
+
+\begin_layout Plain Layout
+no
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex PI
+status open
+
+\begin_layout Plain Layout
+comments="yes"
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex PI
+status open
+
+\begin_layout Plain Layout
+inline="yes"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Luke Howard 
+\begin_inset Flex AuthorOrg
+status open
+
+\begin_layout Plain Layout
+PADL Software
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorOrgAbbrev
+status open
+
+\begin_layout Plain Layout
+PADL
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorInitials
+status open
+
+\begin_layout Plain Layout
+L.
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorSurname
+status open
+
+\begin_layout Plain Layout
+Howard
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorAddrStreet
+status open
+
+\begin_layout Plain Layout
+PO Box 59
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex AuthorAddrCity
+status open
+
+\begin_layout Plain Layout
+Central Park
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorAddrRegion
+status open
+
+\begin_layout Plain Layout
+VIC
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorAddrCountry
+status open
+
+\begin_layout Plain Layout
+Australia
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorAddrCode
+status open
+
+\begin_layout Plain Layout
+3145
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex AuthorEmailAddr
+status open
+
+\begin_layout Plain Layout
+lukeh@padl.com
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+This document updates 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ with support for encryption mechanisms that can authenticate associated
+ data such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Introduction"
+
+\end_inset
+
+Introduction
+\end_layout
+
+\begin_layout Standard
+This document updates 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ with support for encryption mechanisms that support Authenticated Encryption
+ with Associated Data (AEAD) such as Counter with CBC-MAC (CCM) and Galois/Count
+er Mode (GCM).
+ These mechanisms often have performance advantage over conventional encryption
+ modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing (CTS)
+ as they can be efficiently parallelized.
+ 
+\end_layout
+
+\begin_layout Section
+Requirements notation
+\end_layout
+
+\begin_layout Standard
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+ "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are
+ to be interpreted as described in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC2119
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:AEAD"
+
+\end_inset
+
+Authenticated Encryption with Associated Data (AEAD) Overview
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ provides for authenticated encryption of plaintext in the Kerberos 5, that
+ is, it provides both for confidentiality and a way to check the for integrity
+ and authenticity.
+ It can be useful in many applications to provide for the integrity and
+ authenticity of some Associated Data (AD) that is not encrypted; this is
+ termed Authenticated Encryption with Associated Data (AEAD).
+ This can be done by the generic composition of existing encryption and
+ checksum mechanisms, and it can also be done by algorithms which specifically
+ provide for AEAD (see 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC5116
+\end_layout
+
+\end_inset
+
+).
+ These algorithms may have additional constraints that require some updates
+ to 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Updates"
+
+\end_inset
+
+Updates to RFC 3961
+\end_layout
+
+\begin_layout Subsection
+Removal of Mandatory Requirements
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ requires that an encryption mechanism profile define both an associated
+ checksum type and a string-to-key function.
+ AEAD algorithms do not provide for integrity protection outside of authenticate
+d encryption, so we remove the requirement for an associated checksum type.
+ (An application that only requires integrity proteciton can use an authenticate
+d encryption mechanism with a zero length plaintext.)
+\end_layout
+
+\begin_layout Subsection
+Additional Requirements
+\end_layout
+
+\begin_layout Standard
+AEAD algorithms for which reusing an initialization vector/key combination
+ destroys security guarantees are unsuitable for use in existing Kerberos
+ applications where an initialization vector is not specified.
+ To accommodate this we allow an encryption mechanism profile to be marked
+ as usable only with ephemeral session keys, and only with applications
+ that are specifically aware of the requirement for a non-repeating initializati
+on vector.
+ We also remove the requirement that a string-to-key function be defined,
+ as this is relevant only to long-term keys.
+ These algorithms, although assigned 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ encryption type numbers, MUST NOT be used in Kerberos protocol messages
+ where long-term keys are used or the initial cipherstate is unspecified.
+\end_layout
+
+\begin_layout Subsection
+Application-managed Cipherestate
+\end_layout
+
+\begin_layout Standard
+We allow an encryption mechanism to allow the Kerberos application to define
+ the contents of the cipherstate, within the constraint that it be non-repeating
+ (for any given key) and be of a certain length.
+\end_layout
+
+\begin_layout Subsection
+Encrypt/decrypt with Associated Data
+\end_layout
+
+\begin_layout Standard
+We define the following functions for encrypting and decrypting with Associated
+ Data:
+\end_layout
+
+\begin_layout Itemize
+encrypt-with-ad (specific-key, state, associated data, octet string)->(state,
+ octet string)
+\end_layout
+
+\begin_layout Itemize
+decrypt-with-ad (specific-key, state, associated data, octet string)->(state,
+ octet string)
+\end_layout
+
+\begin_layout Subsection
+AEAD with Simplified Profile
+\end_layout
+
+\begin_layout Standard
+We allow the authentication of Associated Data with existing cryptosystems
+ that follow the Simplified Profile defined in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+.
+ NB: if we want to define completely the existing behaviour as implemented
+ by SSPI, MIT Kerberos, and Heimdal then we need to make the input plaintext
+ and associated data a possibly interleaved sequence, as their generic compositi
+on does not reorder the associated data before the plaintext.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+encrypt-with-ad        conf = Random string of length c
+\end_layout
+
+\begin_layout Plain Layout
+
+                       pad  = Shortest string to bring confounder
+\end_layout
+
+\begin_layout Plain Layout
+
+                              and plaintext to a length that's a
+\end_layout
+
+\begin_layout Plain Layout
+
+                              multiple of M
+\end_layout
+
+\begin_layout Plain Layout
+
+                       (C1, newIV) = E(Ke, conf | plaintext | pad,
+\end_layout
+
+\begin_layout Plain Layout
+
+                                       oldstate.ivec)
+\end_layout
+
+\begin_layout Plain Layout
+
+                       H1 = HMAC(Ki, conf | associated data |
+\end_layout
+
+\begin_layout Plain Layout
+
+                                 plaintext | pad)
+\end_layout
+
+\begin_layout Plain Layout
+
+                       ciphertext = C1 | H1[1..h]
+\end_layout
+
+\begin_layout Plain Layout
+
+                       newstate.ivec = newIV
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+decrypt-with-ad        (C1,H1) = ciphertext
+\end_layout
+
+\begin_layout Plain Layout
+
+                       (P1, newIV) = D(Ke, C1, associated data,
+\end_layout
+
+\begin_layout Plain Layout
+
+                                       oldstate.ivec)
+\end_layout
+
+\begin_layout Plain Layout
+
+                       if (H1 != HMAC(Ki, P1)[1..h]))
+\end_layout
+
+\begin_layout Plain Layout
+
+                           report error
+\end_layout
+
+\begin_layout Plain Layout
+
+                       newstate.ivec = newIV
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:AEAD-Profiles"
+
+\end_inset
+
+AEAD Algorithm Profiles for AES
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Protocol-Key-Representation"
+
+\end_inset
+
+Protocol Key Representation
+\end_layout
+
+\begin_layout Standard
+Because the AES key space is dense, random or pseudo-random octet strings
+ are used directly as keys.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Key-Derivation-Function"
+
+\end_inset
+
+Key Derivation Function
+\end_layout
+
+\begin_layout Standard
+We use the key derivation function from 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+SP800-108
+\end_layout
+
+\end_inset
+
+ section 5.2, using CMAC as the PRF.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+key: The initial key from which subsequent keys are derived
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+label: An octet string describing the intended usage of the derived key
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+i: Counter, expressed as four octets in big endian order
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+k: Length in bits of the key to be outputted, expressed as four octets in
+ big endian order
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+k-truncate is defined in RFC3961 section 5.1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+The | operator indicates concatenation.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+K0 = zeros
+\end_layout
+
+\begin_layout Plain Layout
+
+Ki = CMAC(key, K(i-1) | i | label | 0x00 | k)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+KDF-CMAC(key, label, k) = k-truncate(K1 | K2...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+aes128-gcm-128
+\end_layout
+
+\begin_layout Standard
+This profile is based on 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC5116
+\end_layout
+
+\end_inset
+
+ section 5.1.
+ The GCM authenticated encryption algorithm works as specified in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+GCM
+\end_layout
+
+\end_inset
+
+ section 7, using AES-128 as the block cipher.
+ A key length of 16 octets (128 bits) is used, and an authentication tag
+ with a length of 16 octets (128 bits) is used.
+ The following parameters apply to the aes128-gcm-128 encryption type:
+\end_layout
+
+\begin_layout Standard
+protocol key format: as defined in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Protocol-Key-Representation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+specific key structure: one protocol format key, Ke
+\end_layout
+
+\begin_layout Standard
+Ke: the encryption key, inputted into the AES-GCM encryption function defined
+ as encrypt-with-ad and decrypt-with-ad below
+\end_layout
+
+\begin_layout Standard
+required ehecksum mechanism: none
+\end_layout
+
+\begin_layout Standard
+key-generation seed length: key size (128 bits)
+\end_layout
+
+\begin_layout Standard
+string-to-key function: none
+\end_layout
+
+\begin_layout Standard
+default string-to-key parameters: none
+\end_layout
+
+\begin_layout Standard
+key-deriviation function: KDF-CMAC as defined in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Key-Derivation-Function"
+
+\end_inset
+
+.
+ The key usage number is expressed as four octets in big endian order.
+\end_layout
+
+\begin_layout Standard
+Ke = KDF-CMAC(base-key, usage | 0xAA, 128)
+\end_layout
+
+\begin_layout Standard
+cipherstate: a 96-bit initialization vector
+\end_layout
+
+\begin_layout Standard
+initial cipherstate: all bits zero, or specified by application
+\end_layout
+
+\begin_layout Standard
+subsequent cipherstate: if not specified by application, then octets 4..11
+ are used as a 64-bit counter in big endian order
+\end_layout
+
+\begin_layout Standard
+encrypt-with-ad function: AES encryption in GCM mode
+\end_layout
+
+\begin_layout Standard
+decrypt-with-ad function: AES decryption in GCM mode
+\end_layout
+
+\begin_layout Subsection
+aes256-gcm-128
+\end_layout
+
+\begin_layout Standard
+As for aes128-gcm-128, but using AES-256 as the block cipher and with a
+ key length of 32 octets (256 bits).
+\end_layout
+
+\begin_layout Subsection
+aes128-ccm-128
+\end_layout
+
+\begin_layout Standard
+TBD
+\end_layout
+
+\begin_layout Subsection
+aes256-ccm-128
+\end_layout
+
+\begin_layout Standard
+TBD
+\end_layout
+
+\begin_layout Section
+Security Considerations
+\end_layout
+
+\begin_layout Standard
+TBD
+\end_layout
+
+\begin_layout Section
+IANA Considerations
+\end_layout
+
+\begin_layout Standard
+IANA is requested to assign:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Etype
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Encryption type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Reference
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TBD1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+aes128-gcm-128
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[this document]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TBD2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+aes256-gcm-128
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[this document]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:References"
+
+\end_inset
+
+Normative References
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC3961"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC3962"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC5116"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex EmbeddedBibXML
+status open
+
+\begin_layout Plain Layout
+<reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes
+ of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M."
+ surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute
+ of Standards and Technology</organization></author><date year="2007" month="Nov
+emberober"/></front><format type="HTML" target="http://csrc.nist.gov/publications/
+nistpubs/800-38D/SP-800-38D.pdf"/></reference>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex EmbeddedBibXML
+status open
+
+\begin_layout Plain Layout
+<reference anchor="SP800-108"><front><title>Recommendation for Key Derivation
+ Using Pseudorandom Functions</title><author initials="L." surname="Chen"
+ fullname="Lily Chen"><organization>National Institute of Standards and
+ Technology</organization></author><date year="2009" month="October"/></front><f
+ormat type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-108/sp800
+-108.pdf"/></reference>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
