@@ -1077,6 +1077,15 @@ STYLE always set EC for Wrap tokens with confidentiality to the underlying
  of the authentication tag.)
 \end_layout
 
+\begin_layout Standard
+DCE interleaves plaintext and associated data; because AEAD-only algorithms
+ such as GCM require associated data to be processed before any plaintext,
+ any plaintext and associated data must each be coalesced before encrypting
+ or decrypting.
+ XXX do we describe this here or do we define AEAD as taking interleaved
+ data.
+\end_layout
+
 \begin_layout Section
 Security Considerations
 \end_layout
