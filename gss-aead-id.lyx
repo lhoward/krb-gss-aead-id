@@ -665,8 +665,8 @@ RFC2743
 \end_inset
 
  is updated to support Authenticated Encryption with Associated Data.
- This works both with encryption types that directly support AEAD (such
- as GCM and CCM) and with the generic composition of existing 
+ This works both with AEAD-only encryption types (such as GCM and CCM) and
+ with the generic composition of existing 
 \begin_inset Flex EntityXRef
 status open
 
@@ -724,8 +724,7 @@ Updates to RFC 4121
 
 \begin_layout Standard
 The following updates apply to the Kerberos 5 GSS-API mechanism when used
- with encryption types that permit the application to manage the cipherstate
- (see 
+ with AEAD-only encryption types (as defined by 
 \begin_inset Flex EntityXRef
 status open
 
@@ -735,11 +734,15 @@ KRB-AEAD
 
 \end_inset
 
-), and where the cipherstate length is at least 12 octets (96 bits).
- Such profiles where the cipherstate length is less than 12 octets MUST
- NOT be used.
- Because these mechanisms may only be used with ephemeral session keys,
- they SHOULD only be negotiated in GSS-API via 
+ section 4.2).
+ (These encryption types permit the application to manage the cipherstate
+ and are only suitable for use with ephemeral session keys.) Implementations
+ SHALL NOT use AEAD-only encryption types where the cipherstate length is
+ less than 12 octets (96 bytes).
+\end_layout
+
+\begin_layout Standard
+AEAD-only encryption types SHOULD only be negotiated in GSS-API via 
 \begin_inset Flex EntityXRef
 status open
 

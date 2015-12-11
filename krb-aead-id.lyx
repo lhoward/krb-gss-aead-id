@@ -692,6 +692,8 @@ RFC3961
 
  encryption type numbers, MUST NOT be used in Kerberos protocol messages
  where long-term keys are used or the initial cipherstate is unspecified.
+ For the purposes of this document and other documents which reference this,
+ such algorithms shall be referred to as AEAD-only.
 \end_layout
 
 \begin_layout Subsection
@@ -847,7 +849,7 @@ name "sec:AEAD-Profiles"
 
 \end_inset
 
-AEAD Algorithm Profiles for AES
+AEAD-only Algorithm Profiles for AES
 \end_layout
 
 \begin_layout Subsection
