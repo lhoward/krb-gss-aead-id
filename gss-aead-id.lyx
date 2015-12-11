@@ -694,22 +694,115 @@ KRB-AEAD
 TBD: do we allow interleaved plaintext and associated data (which SSPI does
  and indeed requires for DCE), or do we limit it to a single octet string
  each.
+ This affects whether we define GSS_Wrap_AEAD or GSS_Wrap_IOV.
 \end_layout
 
 \begin_layout Subsection
-GSS_Wrap_IOV
+GSS_Wrap_AEAD
+\end_layout
+
+\begin_layout Standard
+Inputs:
+\end_layout
+
+\begin_layout Itemize
+context_handle CONTEXT HANDLE,
+\end_layout
+
+\begin_layout Itemize
+conf_req_flag BOOLEAN,
+\end_layout
+
+\begin_layout Itemize
+qop_req INTEGER, -- 0 specifies default QOP
+\end_layout
+
+\begin_layout Itemize
+input_assoc_data OCTET STRING, -- associated data
+\end_layout
+
+\begin_layout Itemize
+input_message OCTET STRING -- plaintext
+\end_layout
+
+\begin_layout Standard
+Outputs:
+\end_layout
+
+\begin_layout Itemize
+major_status INTEGER,
+\end_layout
+
+\begin_layout Itemize
+minor_status INTEGER,
+\end_layout
+
+\begin_layout Itemize
+conf_state BOOLEAN,
+\end_layout
+
+\begin_layout Itemize
+output_message OCTET STRING -- caller must release with GSS_Release_buffer()
+\end_layout
+
+\begin_layout Standard
+Performs the data origin authentication, data integrity and (optionally)
+ data confidentiality functions of GSS_Wrap(), additionally integrity protecting
+ the data in input_assoc_data.
+ Return values are as for GSS_Wrap().
+ output_message does not include the data in input_assoc_data.
 \end_layout
 
 \begin_layout Subsection
-GSS_Unwrap_IOV
+GSS_Unwrap_AEAD
 \end_layout
 
-\begin_layout Subsection
-GSS_GetMIC_IOV
+\begin_layout Standard
+Inputs:
 \end_layout
 
-\begin_layout Subsection
-GSS_VerifyMIC_IOV
+\begin_layout Itemize
+context_handle CONTEXT HANDLE,
+\end_layout
+
+\begin_layout Itemize
+input_message OCTET STRING, -- plaintext
+\end_layout
+
+\begin_layout Itemize
+input_assoc_data OCTET STRING -- associated data
+\end_layout
+
+\begin_layout Standard
+Outputs:
+\end_layout
+
+\begin_layout Itemize
+conf_state BOOLEAN,
+\end_layout
+
+\begin_layout Itemize
+qop_state INTEGER,
+\end_layout
+
+\begin_layout Itemize
+major_status INTEGER,
+\end_layout
+
+\begin_layout Itemize
+minor_status INTEGER,
+\end_layout
+
+\begin_layout Itemize
+output_message OCTET STRING -- caller must release with GSS_Release_buffer()
+\end_layout
+
+\begin_layout Revision
+Processes a data element generated (and optionally encrypted) by GSS_Wrap(),
+ provided as input_message, additionally validating the data origin and
+ integrity of input_assoc_data.
+ Return values are as for GSS_Unwrap().
+ output_message does not include the data in input_assoc_data.
 \end_layout
 
 \begin_layout Section
@@ -739,6 +832,8 @@ KRB-AEAD
  and are only suitable for use with ephemeral session keys.) Implementations
  SHALL NOT use AEAD-only encryption types where the cipherstate length is
  less than 12 octets (96 bytes).
+ (TBD if we want to support CCM with a 32-bit counter, we should make it
+ fit into 11 octets.)
 \end_layout
 
 \begin_layout Standard
@@ -1051,8 +1146,9 @@ Because native AEAD encryption types lack an explicit checksum operation,
  a plaintext length of zero.
  Even though the same derived key is used, the key usage number and initializati
 on vector serve to disambiguate MIC from Wrap tokens.
- In this case the octet string output by the encrypt-with-ad function contains
- the authentication tag, which is placed in the SGN_CKSUM field of the token.
+ In this case where there is no ciphertext, the octet string output by the
+ encrypt-with-ad function contains the authentication tag, which is placed
+ in the SGN_CKSUM field of the token.
 \end_layout
 
 \begin_layout Subsection
