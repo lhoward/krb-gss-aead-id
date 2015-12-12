@@ -636,12 +636,13 @@ RFC5116
 \end_inset
 
  explicitly provide for AEAD.
- Both approaches are specified in this document.
+ Both approaches are discussed in this document.
 \end_layout
 
 \begin_layout Standard
 Algorithms that are specifically designed for AEAD may have additional constrain
-ts to be imposed on cryptosystems otherwise defined in terms of 
+ts to be imposed on cryptosystems that would otherwise be definable in terms
+ of 
 \begin_inset Flex EntityXRef
 status open
 
@@ -776,8 +777,9 @@ AEAD-only algorithms do not provide for integrity protection outside of
 \end_layout
 
 \begin_layout Standard
-Random session keys can be generated directly, so we remove the requirement
- that a string-to-key function be defined.
+These algorithms are only appropriate for use with random session keys (which
+ can be generated directly), so we remove the requirement that a string-to-key
+ function be defined.
 \end_layout
 
 \begin_layout Subsection
@@ -785,9 +787,20 @@ Application-managed Cipherestate
 \end_layout
 
 \begin_layout Standard
-We permit an encryption mechanism to allow the Kerberos application to define
- the initial cipherstate.
- Applications MUST NOT invoke the authenticated encryption function with
+Whilst 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ requires that the cipherstate be opaque to the application, we relax this
+ so that the application may manage the cipherstate explicitly.
+ In order to meet the security requirements of the underlying cryptosystems,
+ applications MUST NOT invoke the authenticated encryption function with
  a previously used (key, cipherstate) combination.
 \end_layout
 
@@ -801,8 +814,8 @@ e length.
 \begin_layout Standard
 Applications MAY set the cipherstate directly on each invocation of the
  authenticated encryption function.
- This allows an application-level counter such as a sequence number to be
- embedded in the cipherstate.
+ This allows a non-repeating application counter such as a sequence number
+ to be embedded in the cipherstate.
  Alternatively, an application MAY set the initial cipherstate to a random
  value and pass the cipherstate output from the authenticated encryption
  and decryption functions to subsequent invocations.
@@ -844,7 +857,7 @@ decrypt-with-ad (specific-key, state, associated data, octet string)->(state,
 The associated data parameter is input only and contains data that is to
  be authenticated, but not encrypted.
  If the associated data or plaintext are zero length strings, then these
- functions are respectively equivalent to the checksum and encryption functions
+ functions are equivalent respectively to the checksum and encryption functions
  described in 
 \begin_inset Flex EntityXRef
 status open
@@ -987,8 +1000,8 @@ AEAD-only Algorithm Profiles
 \end_layout
 
 \begin_layout Standard
-This section defines AEAD-only profiles for use of the AES-GCM, AES-CCM
- and chacha20-poly1305 algorithms with Kerberos.
+This section defines AEAD-only profiles for using the AES-GCM, AES-CCM and
+ chacha20-poly1305 algorithms with Kerberos.
 \end_layout
 
 \begin_layout Subsection
@@ -1031,8 +1044,7 @@ SP800-108
 
 \end_inset
 
- Section 5 are used by all the profiles defined in this section.
- The following common definitions are made:
+ Section 5 are used with the following common definitions:
 \end_layout
 
 \begin_layout Description
@@ -1470,7 +1482,7 @@ decrypt-with-ad function: AES decryption in CCM mode
 pseudo random function: PRF = KDF-CMAC(base-key, "prf" | octet-string)
 \end_layout
 
-\begin_layout Standard
+\begin_layout RevisionRemark
 TBD: It may be better to use a nonce length of 11 octets (n = 11, q = 4)
  so the counter length is 32 bits.
  This would put a more reasonable limit on message size and is compatible

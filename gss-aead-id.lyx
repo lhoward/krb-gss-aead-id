@@ -553,26 +553,16 @@ RFC4121
 \end_inset
 
  with support for encryption mechanisms that support Authenticated Encryption
- with Associated Data (AEAD) such as Counter with CBC-MAC (CCM) and Galois/Count
-er Mode (GCM).
+ with Associated Data (AEAD).
  These mechanisms often have performance advantage over conventional encryption
  modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing (CTS)
- as they can be efficiently parallelized.
+ as they can be efficiently parallelized and do not expand the plaintext
+ when encrypting.
 \end_layout
 
 \begin_layout Standard
-In addition, this profile takes advantage of 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-RFC3961
-\end_layout
-
-\end_inset
-
- cipherstate to reduce per-message token size by omitting the confounder
- and encrypted copy of the token header.
+In addition, this document defines new GSS-API functions for protecting
+ associated data in addition to a plaintext.
 \end_layout
 
 \begin_layout Section
@@ -639,7 +629,7 @@ RFC5116
 
 ).
  The latter class of algorithms, referred to as AEAD-only, may have additional
- constraints, which are further described in 
+ constraints (further described in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -649,7 +639,7 @@ KRB-AEAD
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Section
@@ -672,7 +662,8 @@ RFC2743
 
 \end_inset
 
- is updated to support Authenticated Encryption with Associated Data.
+ is updated with variations of GSS_Wrap() and GSS_Unwrap() that permit the
+ inclusion of associated data to be authenticated along with a plaintext.
 \end_layout
 
 \begin_layout RevisionRemark
@@ -735,7 +726,7 @@ Performs the data origin authentication, data integrity and (optionally)
  data confidentiality functions of GSS_Wrap(), additionally integrity protecting
  the data in input_assoc_data.
  Return values are as for GSS_Wrap().
- output_message does not include the data in input_assoc_data.
+ Note that output_message does not include the data in input_assoc_data.
 \end_layout
 
 \begin_layout Subsection
@@ -782,12 +773,12 @@ minor_status INTEGER,
 output_message OCTET STRING -- caller must release with GSS_Release_buffer()
 \end_layout
 
-\begin_layout Revision
+\begin_layout Standard
 Processes a data element generated (and optionally encrypted) by GSS_Wrap(),
  provided as input_message, additionally validating the data origin and
  integrity of input_assoc_data.
  Return values are as for GSS_Unwrap().
- output_message does not include the data in input_assoc_data.
+ Note that output_message does not include the data in input_assoc_data.
 \end_layout
 
 \begin_layout Section
@@ -805,8 +796,8 @@ Existing Encryption Types
 \end_layout
 
 \begin_layout Standard
-The generation of per-message tokens using the GSS_Wrap_AEAD() and GSS_Unwrap_AE
-AD() functions are identical to 
+The composition of per-message tokens using the GSS_Wrap_AEAD() and GSS_Unwrap_A
+EAD() functions is identical to 
 \begin_inset Flex EntityXRef
 status open
 
@@ -816,7 +807,18 @@ RFC4121
 
 \end_inset
 
- for existing non-AEAD-only encryption types, except for the following:
+ for existing encryption types such as those using the Simplified Profile
+ in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+, except for the following:
 \end_layout
 
 \begin_layout Itemize
@@ -825,8 +827,7 @@ the encrypt-with-ad and decrypt-with-ad functions are used instead of the
 \end_layout
 
 \begin_layout Itemize
-that the input_assoc_data parameter is passed as the associated data when
- invoking the above functions
+the input_assoc_data parameter is passed to these functions
 \end_layout
 
 \begin_layout Standard
@@ -870,7 +871,7 @@ RFC4121
 
 \end_inset
 
- is updated as described in this section.
+ is modified as described in this section.
 \end_layout
 
 \begin_layout Subsubsection
@@ -882,9 +883,11 @@ Implementations SHALL NOT use AEAD-only encryption types where the cipherstate
  length is less than 12 octets (96 bytes).
 \end_layout
 
-\begin_layout Revision
-TBD: if we want to support CCM with a 32-bit counter, we should remove the
- Filler byte and make the required cipherstate length 11 octets.
+\begin_layout RevisionRemark
+TBD: if we want to support CCM with a 32-bit counter, we can remove the
+ Filler byte and reduce the required cipherstate length to 11 octets.
+ This may make it more difficult to use TLS-oriented GCM implementations
+ that expose the Fixed-Common and Fixed-Distinct nonce components independently.
 \end_layout
 
 \begin_layout Standard
@@ -975,7 +978,7 @@ Identification field, per
 status open
 
 \begin_layout Plain Layout
-KRB-4121
+RFC4121
 \end_layout
 
 \end_inset
@@ -1014,7 +1017,7 @@ Attributes field, per
 status open
 
 \begin_layout Plain Layout
-KRB-4121
+RFC4121
 \end_layout
 
 \end_inset
@@ -1082,7 +1085,7 @@ Sequence number field, per
 status open
 
 \begin_layout Plain Layout
-KRB-4121
+RFC4121
 \end_layout
 
 \end_inset
@@ -1102,8 +1105,13 @@ KRB-4121
 
 \begin_layout Standard
 The output cipherstate from the encrypt-with-ad and decrypt-with-ad functions
- is discarded as it is always specified explicitly by the Kerberos 5 GSS-API
- mechanism.
+ is discarded as it is always specified explicitly as described above.
+\end_layout
+
+\begin_layout Standard
+The use of application-managed cipherstate allows the per-message token
+ size be reduced by omitting the confounder and encrypted copy of the token
+ header.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1172,7 +1180,7 @@ KRB-AEAD
  Section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use, see
  below).
  This specification does not support AEAD-only encryption types that require
- padding.
+ the plaintext to be padded.
 \end_layout
 
 \begin_layout Standard
@@ -1200,8 +1208,8 @@ Because native AEAD encryption types lack an explicit checksum operation,
  MIC tokens are generated similarly to Wrap tokens, using the encrypt-with-ad
  function passing the to-be-signed data as the associated data and using
  a plaintext length of zero.
- Even though the same derived key is used, the key usage number and initializati
-on vector serve to disambiguate MIC from Wrap tokens.
+ Even though the same derived key is used, the key usage and initialization
+ vector serve to disambiguate MIC from Wrap tokens.
  The octet string output by the encrypt-with-ad function contains the authentica
 tion tag, which is placed in the SGN_CKSUM field of the token.
 \end_layout
@@ -1343,26 +1351,6 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset href
 LatexCommand href
-name "RFC3962"
-target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Flex BibXML
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset href
-LatexCommand href
 name "RFC4121"
 target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4121.xml"
 
@@ -1425,42 +1413,6 @@ status open
  5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organiza
 tion>PADL Software</organization></author><date year="2015" month="December"/></
 front></reference>
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Flex EmbeddedBibXML
-status open
-
-\begin_layout Plain Layout
-<reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes
- of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M."
- surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute
- of Standards and Technology</organization></author><date year="2007" month="Nov
-ember"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nist
-pubs/800-38D/SP-800-38D.pdf"/></reference>
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Flex EmbeddedBibXML
-status open
-
-\begin_layout Plain Layout
-<reference anchor="SP800-108"><front><title>Recommendation for Key Derivation
- Using Pseudorandom Functions</title><author initials="L." surname="Chen"
- fullname="Lily Chen"><organization>National Institute of Standards and
- Technology</organization></author><date year="2009" month="October"/></front><f
-ormat type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-108/sp800
--108.pdf"/></reference>
 \end_layout
 
 \end_inset
