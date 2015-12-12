@@ -1113,7 +1113,7 @@ SP800-108
 \end_layout
 
 \begin_layout Description
-K0: k bits of zero
+K0: all zero bits
 \end_layout
 
 \begin_layout Description
@@ -1161,7 +1161,7 @@ SP800-108
 \end_layout
 
 \begin_layout Description
-K0: k bits of zero
+K0: all zero bits
 \end_layout
 
 \begin_layout Description
