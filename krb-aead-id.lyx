@@ -783,7 +783,7 @@ These algorithms are only appropriate for use with random session keys (which
 \end_layout
 
 \begin_layout Subsection
-Application-managed Cipherestate
+Application-managed Cipherstate
 \end_layout
 
 \begin_layout Standard
@@ -1030,7 +1030,7 @@ Key Derivation Functions
 \end_layout
 
 \begin_layout Subsubsection
-Common definitions
+Common KDF Definitions
 \end_layout
 
 \begin_layout Standard
@@ -1176,7 +1176,7 @@ name "sub:Cipherstate-chaining"
 
 \end_inset
 
-Cipherstate chaining
+Cipherstate Chaining
 \end_layout
 
 \begin_layout Standard
@@ -1233,7 +1233,7 @@ Note that the invocation counter described above is independent of the block
 \end_layout
 
 \begin_layout Subsection
-Common Definitions
+Common Profile Definitions
 \end_layout
 
 \begin_layout Standard
