@@ -1233,6 +1233,99 @@ Note that the invocation counter described above is independent of the block
 \end_layout
 
 \begin_layout Subsection
+Common Definitions
+\end_layout
+
+\begin_layout Standard
+The following parameters apply to all the encryption types defined below.
+\end_layout
+
+\begin_layout Standard
+protocol key format: as defined in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Protocol-Key-Representation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+specific key structure: one protocol format key, Ke
+\end_layout
+
+\begin_layout Standard
+required checksum mechanism: none
+\end_layout
+
+\begin_layout Standard
+key generation functions
+\end_layout
+
+\begin_layout Standard
+string-to-key function: none
+\end_layout
+
+\begin_layout Standard
+random-to-key function: identity function
+\end_layout
+
+\begin_layout Standard
+cipherstate: a 96-bit initialization vector
+\end_layout
+
+\begin_layout Standard
+initial cipherstate: all bits zero, or specified by application
+\end_layout
+
+\begin_layout Standard
+subsequent cipherstate: the previous cipherstate incremented by one per
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Cipherstate-chaining"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+encrypt (specific-key, state, octet string): encrypt-with-ad (specific-key,
+ state, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, octet string) where 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ is the empty octet string
+\end_layout
+
+\begin_layout Standard
+decrypt (specific-key, state, octet string): decrypt-with-ad (specific-key,
+ state, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, octet string)
+\end_layout
+
+\begin_layout Subsection
 aes128-gcm-128
 \end_layout
 
@@ -1268,39 +1361,7 @@ The following parameters apply to the aes128-gcm-128 encryption type:
 \end_layout
 
 \begin_layout Standard
-protocol key format: as defined in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Protocol-Key-Representation"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-specific key structure: one protocol format key, Ke
-\end_layout
-
-\begin_layout Standard
-Ke: the encryption key, inputted into the AES-GCM authenticated encryption
- function defined as encrypt-with-ad and decrypt-with-ad below
-\end_layout
-
-\begin_layout Standard
-required checksum mechanism: none
-\end_layout
-
-\begin_layout Standard
 key-generation seed length: key size (128 bits)
-\end_layout
-
-\begin_layout Standard
-string-to-key function: none
-\end_layout
-
-\begin_layout Standard
-default string-to-key parameters: none
 \end_layout
 
 \begin_layout Standard
@@ -1320,31 +1381,11 @@ Ke = KDF-CMAC(base-key, usage | 0xAA)
 \end_layout
 
 \begin_layout Standard
-cipherstate: a 96-bit initialization vector
+encrypt-with-ad function: AES encryption in GCM mode using Ke
 \end_layout
 
 \begin_layout Standard
-initial cipherstate: all bits zero, or specified by application
-\end_layout
-
-\begin_layout Standard
-subsequent cipherstate: the previous cipherstate incremented by one per
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Cipherstate-chaining"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-encrypt-with-ad function: AES encryption in GCM mode
-\end_layout
-
-\begin_layout Standard
-decrypt-with-ad function: AES decryption in GCM mode
+decrypt-with-ad function: AES decryption in GCM mode using Ke
 \end_layout
 
 \begin_layout Standard
@@ -1356,8 +1397,8 @@ aes256-gcm-128
 \end_layout
 
 \begin_layout Standard
-As for aes128-gcm-128, but using AES-256 as the block cipher and with a
- key length of 32 octets (256 bits).
+As for aes128-gcm-128, but using AES-256 as the block cipher and with key
+ and key-generation seed lengths of 32 octets (256 bits).
 \end_layout
 
 \begin_layout Subsection
@@ -1399,39 +1440,7 @@ The following parameters apply to the aes128-ccm-128 encryption type:
 \end_layout
 
 \begin_layout Standard
-protocol key format: as defined in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Protocol-Key-Representation"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-specific key structure: one protocol format key, Ke
-\end_layout
-
-\begin_layout Standard
-Ke: the encryption key, inputted into the AES-CCM authenticated encryption
- function defined as encrypt-with-ad and decrypt-with-ad below
-\end_layout
-
-\begin_layout Standard
-required checksum mechanism: none
-\end_layout
-
-\begin_layout Standard
 key-generation seed length: key size (128 bits)
-\end_layout
-
-\begin_layout Standard
-string-to-key function: none
-\end_layout
-
-\begin_layout Standard
-default string-to-key parameters: none
 \end_layout
 
 \begin_layout Standard
@@ -1451,31 +1460,11 @@ Ke = KDF-CMAC(base-key, usage | 0xAA)
 \end_layout
 
 \begin_layout Standard
-cipherstate: a 96-bit initialization vector
+encrypt-with-ad function: AES encryption in CCM mode using Ke
 \end_layout
 
 \begin_layout Standard
-initial cipherstate: all bits zero, or specified by application
-\end_layout
-
-\begin_layout Standard
-subsequent cipherstate: the previous cipherstate incremented by one per
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Cipherstate-chaining"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-encrypt-with-ad function: AES encryption in CCM mode
-\end_layout
-
-\begin_layout Standard
-decrypt-with-ad function: AES decryption in CCM mode
+decrypt-with-ad function: AES decryption in CCM mode using Ke
 \end_layout
 
 \begin_layout Standard
@@ -1497,8 +1486,8 @@ aes256-ccm-128
 \end_layout
 
 \begin_layout Standard
-As for aes128-ccm-128, but using AES-256 as the block cipher and with a
- key length of 32 octets (256 bits).
+As for aes128-ccm-128, but using AES-256 as the block cipher and with key
+ and key-generation seed lengths of 32 octets (256 bits).
 \end_layout
 
 \begin_layout Subsection
@@ -1528,39 +1517,7 @@ RFC7539
 \end_layout
 
 \begin_layout Standard
-protocol key format: as defined in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Protocol-Key-Representation"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-specific key structure: one protocol format key, Ke
-\end_layout
-
-\begin_layout Standard
-Ke: the encryption key, inputted into the chacha20-poly1305 authenticated
- encryption function defined as encrypt-with-ad and decrypt-with-ad below
-\end_layout
-
-\begin_layout Standard
-required checksum mechanism: none
-\end_layout
-
-\begin_layout Standard
 key-generation seed length: key size (256 bits)
-\end_layout
-
-\begin_layout Standard
-string-to-key function: none
-\end_layout
-
-\begin_layout Standard
-default string-to-key parameters: none
 \end_layout
 
 \begin_layout Standard
@@ -1580,31 +1537,13 @@ Ke = KDF-HMAC-SHA2(base-key, usage | 0xAA)
 \end_layout
 
 \begin_layout Standard
-cipherstate: a 96-bit initialization vector
+encrypt-with-ad function: AEAD construction of chacha20 with poly1305 using
+ Ke
 \end_layout
 
 \begin_layout Standard
-initial cipherstate: all bits zero, or specified by application
-\end_layout
-
-\begin_layout Standard
-subsequent cipherstate: the previous cipherstate incremented by one per
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Cipherstate-chaining"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-encrypt-with-ad function: AEAD construction of chacha20 with poly1305
-\end_layout
-
-\begin_layout Standard
-decrypt-with-ad function: AEAD construction of chacha20 with poly1305
+decrypt-with-ad function: AEAD construction of chacha20 with poly1305 using
+ Ke
 \end_layout
 
 \begin_layout Standard
