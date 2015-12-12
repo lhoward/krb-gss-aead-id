@@ -871,6 +871,14 @@ RFC3961
 .
 \end_layout
 
+\begin_layout RevisionRemark
+NB: these functions only allow a single associated data and plaintext buffer
+ to be supplied, which is not compatible with applications such as DCE RPC
+ that interleave the associated data and plaintext buffers.
+ Support for such applications is implementation dependent and not guaranteed
+ to work with AEAD-only ciphers that only take a single buffer of each.
+\end_layout
+
 \begin_layout Subsection
 AEAD with Simplified Profile
 \end_layout
@@ -890,11 +898,6 @@ RFC3961
  through generic composition.
 \end_layout
 
-\begin_layout RevisionRemark
-NB: this does not allow for interleaved plaintext and associated data, which
- is not sufficient for DCE RPC interoperability with Microsoft Windows SSPI.
-\end_layout
-
 \begin_layout Standard
 \begin_inset listings
 inline false
@@ -902,52 +905,52 @@ status open
 
 \begin_layout Plain Layout
 
-encrypt-with-ad        conf = Random string of length c
+encrypt-with-ad    conf = Random string of length c
 \end_layout
 
 \begin_layout Plain Layout
 
-                       pad  = Shortest string to bring confounder
+                   pad  = Shortest string to bring confounder
 \end_layout
 
 \begin_layout Plain Layout
 
-                              and plaintext to a length that's a
+                          and plaintext to a length that's a
 \end_layout
 
 \begin_layout Plain Layout
 
-                              multiple of M
+                          multiple of M
 \end_layout
 
 \begin_layout Plain Layout
 
-                       (C1, newIV) = E(Ke, conf | plaintext | pad,
+                   (C1, newIV) = E(Ke, conf | plaintext | pad,
 \end_layout
 
 \begin_layout Plain Layout
 
-                                       oldstate.ivec)
+                                   oldstate.ivec)
 \end_layout
 
 \begin_layout Plain Layout
 
-                       H1 = HMAC(Ki, conf | associated data |
+                   H1 = HMAC(Ki, conf | associated data |
 \end_layout
 
 \begin_layout Plain Layout
 
-                                 plaintext | pad)
+                             plaintext | pad
 \end_layout
 
 \begin_layout Plain Layout
 
-                       ciphertext = C1 | H1[1..h]
+                   ciphertext = C1 | H1[1..h]
 \end_layout
 
 \begin_layout Plain Layout
 
-                       newstate.ivec = newIV
+                   newstate.ivec = newIV
 \end_layout
 
 \begin_layout Plain Layout
@@ -956,32 +959,32 @@ encrypt-with-ad        conf = Random string of length c
 
 \begin_layout Plain Layout
 
-decrypt-with-ad        (C1,H1) = ciphertext
+decrypt-with-ad    (C1,H1) = ciphertext
 \end_layout
 
 \begin_layout Plain Layout
 
-                       (P1, newIV) = D(Ke, C1, associated data,
+                   (P1, newIV) = D(Ke, C1, associated data,
 \end_layout
 
 \begin_layout Plain Layout
 
-                                       oldstate.ivec)
+                                   oldstate.ivec)
 \end_layout
 
 \begin_layout Plain Layout
 
-                       if (H1 != HMAC(Ki, P1)[1..h]))
+                   if (H1 != HMAC(Ki, P1)[1..h]))
 \end_layout
 
 \begin_layout Plain Layout
 
-                           report error
+                       report error
 \end_layout
 
 \begin_layout Plain Layout
 
-                       newstate.ivec = newIV
+                   newstate.ivec = newIV
 \end_layout
 
 \end_inset
@@ -1030,7 +1033,7 @@ Key Derivation Functions
 \end_layout
 
 \begin_layout Subsubsection
-Common KDF Definitions
+Common Definitions for Key Derivation
 \end_layout
 
 \begin_layout Standard
@@ -1044,7 +1047,7 @@ SP800-108
 
 \end_inset
 
- Section 5 are used with the following common definitions:
+ Section 5 are used.
 \end_layout
 
 \begin_layout Description
@@ -1104,8 +1107,8 @@ SP800-108
 
 \end_inset
 
- Section 5.2, using CMAC as the PRF with the underlying block cipher appropriate
- to the base key.
+ Section 5.2, using CMAC as the PRF with either AES-128 or AES-256 (depending
+ on the input key).
  The composition is given below:
 \end_layout
 
@@ -1212,9 +1215,11 @@ newstate fixed | counter + 1
 
 \begin_layout Standard
 The + operator indicates addition of 64-bit integers expressed as eight
- octets in big endian order, raising an error on overflow.
- This composition is compatible with the recommended nonce formation defined
- in 
+ octets in big endian order, raising an error after 2^64 invocations.
+ (Note that the application may specify a non-zero initial cipherstate,
+ so the implementation must check the invocation count for overflow rather
+ than the cipherstate counter.) This composition is compatible with the recommend
+ed nonce formation defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -1292,37 +1297,17 @@ reference "sub:Cipherstate-chaining"
 \end_layout
 
 \begin_layout Standard
+empty: the empty (zero length) octet string
+\end_layout
+
+\begin_layout Standard
 encrypt (specific-key, state, octet string): encrypt-with-ad (specific-key,
- state, 
-\begin_inset Quotes eld
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
-, octet string) where 
-\begin_inset Quotes eld
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
- is the empty octet string
+ state, empty, octet string)
 \end_layout
 
 \begin_layout Standard
 decrypt (specific-key, state, octet string): decrypt-with-ad (specific-key,
- state, 
-\begin_inset Quotes eld
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
-, octet string)
+ state, empty, octet string)
 \end_layout
 
 \begin_layout Subsection
@@ -1674,7 +1659,7 @@ TBD3
 \begin_inset Text
 
 \begin_layout Plain Layout
-aes128-gcm-128
+aes128-ccm-128
 \end_layout
 
 \end_inset
@@ -1703,7 +1688,7 @@ TBD4
 \begin_inset Text
 
 \begin_layout Plain Layout
-aes256-gcm-128
+aes256-ccm-128
 \end_layout
 
 \end_inset
