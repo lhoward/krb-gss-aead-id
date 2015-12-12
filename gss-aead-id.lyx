@@ -282,7 +282,7 @@ AEAD Modes for Kerberos GSS-API
 status open
 
 \begin_layout Plain Layout
-draft-howard-gssapi-aead-00.txt
+draft-howard-gssapi-aead-00
 \end_layout
 
 \end_inset
@@ -558,7 +558,10 @@ er Mode (GCM).
  These mechanisms often have performance advantage over conventional encryption
  modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing (CTS)
  as they can be efficiently parallelized.
- In addition, this profile takes advantage of 
+\end_layout
+
+\begin_layout Standard
+In addition, this profile takes advantage of 
 \begin_inset Flex EntityXRef
 status open
 
@@ -615,12 +618,16 @@ RFC4121
 
  provides for the authenticated encryption of plaintext, that is, it provides
  both for confidentiality and a way to check the for integrity and authenticity.
- It can be useful in many applications to provide for the integrity and
- authenticity of some Associated Data (AD) that is not encrypted; this is
- termed Authenticated Encryption with Associated Data (AEAD).
+ 
+\end_layout
+
+\begin_layout Standard
+It can be useful in many applications to provide for the integrity and authentic
+ity of some Associated Data (AD) that is not encrypted; this is termed Authentic
+ated Encryption with Associated Data (AEAD).
  This can be done by the generic composition of existing encryption and
- checksum mechanisms, and it can also be done by algorithms which specifically
- provide for AEAD (see 
+ checksum mechanisms, or using algorithms which specifically provide for
+ AEAD (see 
 \begin_inset Flex EntityXRef
 status open
 
@@ -631,7 +638,8 @@ RFC5116
 \end_inset
 
 ).
- These algorithms may have additional constraints as specified in 
+ The latter class of algorithms, referred to as AEAD-only, may have additional
+ constraints, which are further described in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -665,36 +673,13 @@ RFC2743
 \end_inset
 
  is updated to support Authenticated Encryption with Associated Data.
- This works both with AEAD-only encryption types (such as GCM and CCM) and
- with the generic composition of existing 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-RFC3961
-\end_layout
-
-\end_inset
-
- encryption types.
- Both approaches are defined in 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-KRB-AEAD
-\end_layout
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout RevisionRemark
 TBD: do we allow interleaved plaintext and associated data (which SSPI does
  and indeed requires for DCE), or do we limit it to a single octet string
- each.
- This affects whether we define GSS_Wrap_AEAD or GSS_Wrap_IOV.
+ each? If the former, we need to define GSS_Wrap_IOV instead of GSS_Wrap_AEAD
+ (and the Unwrap equivalents).
 \end_layout
 
 \begin_layout Subsection
@@ -815,10 +800,37 @@ name "sec:Krb-Updates"
 Updates to RFC 4121
 \end_layout
 
+\begin_layout Subsection
+Existing Encryption Types
+\end_layout
+
 \begin_layout Standard
-The following updates apply to the Kerberos 5 GSS-API mechanism when used
- with AEAD-only encryption types.
- (AEAD-only encryption types as defined in 
+The generation of per-message tokens using the GSS_Wrap_AEAD() and GSS_Unwrap_AE
+AD() functions are identical to 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC4121
+\end_layout
+
+\end_inset
+
+ for existing non-AEAD-only encryption types, except for the following:
+\end_layout
+
+\begin_layout Itemize
+the encrypt-with-ad and decrypt-with-ad functions are used instead of the
+ encrypt and decrypt functions (respectively)
+\end_layout
+
+\begin_layout Itemize
+that the input_assoc_data parameter is passed as the associated data when
+ invoking the above functions
+\end_layout
+
+\begin_layout Standard
+Because 
 \begin_inset Flex EntityXRef
 status open
 
@@ -828,14 +840,55 @@ KRB-AEAD
 
 \end_inset
 
- Section 4.2 allow the application to manage the cipherstate and are only
- suitable for use with ephemeral session keys.)
+ defines encrypt-with-ad for existing encryption types as the generic compositio
+n of the encryption and checksum functions, the output of GSS_Wrap_AEAD()
+ with no associated data is identical to GSS_Wrap().
+\end_layout
+
+\begin_layout Subsection
+AEAD-only Encryption Types
+\end_layout
+
+\begin_layout Standard
+When used with AEAD-only encryption types as defined in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+KRB-AEAD
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC4121
+\end_layout
+
+\end_inset
+
+ is updated as described in this section.
+\end_layout
+
+\begin_layout Subsubsection
+Restriction on AEAD-only Usage
 \end_layout
 
 \begin_layout Standard
 Implementations SHALL NOT use AEAD-only encryption types where the cipherstate
  length is less than 12 octets (96 bytes).
- AEAD-only encryption types SHOULD only be negotiated for use in GSS-API
+\end_layout
+
+\begin_layout Revision
+TBD: if we want to support CCM with a 32-bit counter, we should remove the
+ Filler byte and make the required cipherstate length 11 octets.
+\end_layout
+
+\begin_layout Standard
+AEAD-only encryption types SHOULD only be negotiated for use in GSS-API
  using the cryptosystem negotiation extension defined in 
 \begin_inset Flex EntityXRef
 status open
@@ -849,18 +902,13 @@ RFC4537
 .
 \end_layout
 
-\begin_layout Revision
-TBD: if we want to support CCM with a 32-bit counter, we should make it
- fit into 11 octets.
-\end_layout
-
-\begin_layout Subsection
+\begin_layout Subsubsection
 Application-provided Cipherstate
 \end_layout
 
 \begin_layout Standard
-The cipherstate (initialization vector) for each invocation of encrypt-with-ad
- or decrypt-with-ad is given as follows:
+The cipherstate for each invocation of encrypt-with-ad or decrypt-with-ad
+ is given as follows:
 \end_layout
 
 \begin_layout Standard
@@ -1054,10 +1102,11 @@ KRB-4121
 
 \begin_layout Standard
 The output cipherstate from the encrypt-with-ad and decrypt-with-ad functions
- is discarded as it is always specified explicitly by the caller.
+ is discarded as it is always specified explicitly by the Kerberos 5 GSS-API
+ mechanism.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 Encryption and Checksum Operations
 \end_layout
 
@@ -1108,8 +1157,8 @@ RFC4121
 
 \end_inset
 
-; however, because it is a constant value, it can be validated by the receiver.
- The receiver MUST validate the EC field.
+.
+ The receiver MUST explicitly validate the EC field.
  For the AEAD-only encryption types profiled in 
 \begin_inset Flex EntityXRef
 status open
@@ -1157,7 +1206,7 @@ on vector serve to disambiguate MIC from Wrap tokens.
 tion tag, which is placed in the SGN_CKSUM field of the token.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:DCE"
@@ -1173,8 +1222,11 @@ STYLE always set EC for Wrap tokens with confidentiality to the underlying
  cipher's block size (16 bytes for AES), and use an effective Right Rotation
  Count (RRC) of EC + RRC bytes.
  This document does not specify otherwise.
- When GSS_C_DCE_STYLE is set, implementations MUST verify that the otherwise
- unprotected EC field is the underlying cipher's block size.
+\end_layout
+
+\begin_layout Standard
+Receivers MUST verify that the otherwise unprotected EC field is the underlying
+ cipher's block size for Wrap tokens with confidentiality.
  (For Wrap tokens without confidentiality, the EC field remains the length
  of the authentication tag.)
 \end_layout
@@ -1209,6 +1261,11 @@ Because the initialization vector has a deterministic (but non-repeating)
  number of invocations of the authenticated encryption function.
 \end_layout
 
+\begin_layout Standard
+The reordering of plaintext and associated data for GSS_C_DCE_STYLE interoperabi
+lity may be problematic.
+\end_layout
+
 \begin_layout Section
 \begin_inset CommandInset label
 LatexCommand label
@@ -1217,6 +1274,26 @@ name "sec:References"
 \end_inset
 
 Normative References
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC2119"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
