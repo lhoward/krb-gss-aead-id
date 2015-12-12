@@ -828,7 +828,7 @@ KRB-AEAD
 
 \end_inset
 
- section 4.2 allow the application to manage the cipherstate and are only
+ Section 4.2 allow the application to manage the cipherstate and are only
  suitable for use with ephemeral session keys.)
 \end_layout
 
@@ -932,7 +932,7 @@ KRB-4121
 
 \end_inset
 
- section 4.2.6 
+ Section 4.2.6 
 \end_layout
 
 \end_inset
@@ -971,7 +971,7 @@ KRB-4121
 
 \end_inset
 
- section 4.2.6 
+ Section 4.2.6 
 \end_layout
 
 \end_inset
@@ -1039,7 +1039,7 @@ KRB-4121
 
 \end_inset
 
- section 4.2.6 
+ Section 4.2.6 
 \end_layout
 
 \end_inset
@@ -1072,7 +1072,7 @@ RFC4121
 
 \end_inset
 
- section 4.2.4.
+ Section 4.2.4.
 \end_layout
 
 \begin_layout Standard
@@ -1095,7 +1095,7 @@ RFC4121
 
 \end_inset
 
- section 4.2.6) SHALL NOT be appended to the plaintext data before encryption.
+ Section 4.2.6) SHALL NOT be appended to the plaintext data before encryption.
  Instead, the TOK_ID, Flags and SND_SEQ fields of the token header are protected
  by the initialization vector (cipherstate).
  The EC field is unprotected, a change from 
@@ -1120,7 +1120,7 @@ KRB-AEAD
 
 \end_inset
 
- section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use, see
+ Section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use, see
  below).
  This specification does not support AEAD-only encryption types that require
  padding.
@@ -1137,12 +1137,13 @@ In Wrap tokens that do not provide for confidentiality, the first 16 octets
 status open
 
 \begin_layout Plain Layout
-KRB-AEAD section 5
+KRB-AEAD
 \end_layout
 
 \end_inset
 
-, EC SHALL be sixteen, reflecting the tag length of 16 octets (128 bits).
+ Section 5, EC SHALL be sixteen, reflecting the tag length of 16 octets
+ (128 bits).
 \end_layout
 
 \begin_layout Standard
