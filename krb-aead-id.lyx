@@ -653,7 +653,8 @@ RFC3961
 \end_inset
 
 .
- We term these algorithms AEAD-only.
+ We term these algorithms native AEAD, to distinguish them from the generic
+ composition of non-AEAD encryption and checksum types.
 \end_layout
 
 \begin_layout Section
@@ -677,7 +678,7 @@ RFC3961
 
 \end_inset
 
- for use with AEAD-only encryption types.
+ for use with native AEAD encryption types.
 \end_layout
 
 \begin_layout Subsection
@@ -685,7 +686,7 @@ Additional Requirements
 \end_layout
 
 \begin_layout Standard
-The AEAD-only algorithms profiled in 
+The native AEAD algorithms profiled in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -724,7 +725,7 @@ RFC3962
 \end_layout
 
 \begin_layout Standard
-To accommodate the use of AEAD-only cryptosystems with Kerberos, we allow
+To accommodate the use of native AEAD cryptosystems with Kerberos, we allow
  an encryption mechanism profile to be marked as usable only by applications
  that can guarantee that each invocation of the encryption function with
  a particular key will use a unique cipherstate.
@@ -744,7 +745,7 @@ RFC4537
 
 \end_inset
 
-, AEAD-only encryption types share the same namespace as existing Kerberos
+, native AEAD encryption types share the same namespace as existing Kerberos
  algorithms.
  However, they MUST NOT be used with long-term keys or where the initial
  cipherstate is unspecified.
@@ -769,7 +770,7 @@ RFC3961
 \end_layout
 
 \begin_layout Standard
-AEAD-only algorithms do not provide for integrity protection outside of
+Native AEAD algorithms do not provide for integrity protection outside of
  authenticated encryption, so we remove the requirement for an associated
  checksum type.
  (An application that only requires integrity protection may invoke the
@@ -805,8 +806,8 @@ RFC3961
 \end_layout
 
 \begin_layout Standard
-Applications that support AEAD-only ciphers MAY impose a minimum octet length
- requirement on the cipherstate.
+Applications that support native AEAD ciphers MAY impose a minimum octet
+ length requirement on the cipherstate.
  Such applications MUST NOT be used with cryptosystems with a shorter cipherstat
 e length.
 \end_layout
@@ -876,7 +877,7 @@ NB: these functions only allow a single associated data and plaintext buffer
  to be supplied, which is not compatible with applications such as DCE RPC
  that interleave the associated data and plaintext buffers.
  Support for such applications is implementation dependent and not guaranteed
- to work with AEAD-only ciphers that only take a single buffer of each.
+ to work with native AEAD ciphers that only take a single buffer of each.
 \end_layout
 
 \begin_layout Subsection
@@ -884,8 +885,8 @@ AEAD with Simplified Profile
 \end_layout
 
 \begin_layout Standard
-We allow the authentication of associated data with existing (non-AEAD-only)
- cryptosystems that follow the Simplified Profile defined in 
+We allow the authentication of associated data with existing cryptosystems
+ that follow the Simplified Profile defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -999,12 +1000,12 @@ name "sec:AEAD-Profiles"
 
 \end_inset
 
-AEAD-only Algorithm Profiles
+Native AEAD Algorithm Profiles
 \end_layout
 
 \begin_layout Standard
-This section defines AEAD-only profiles for using the AES-GCM, AES-CCM and
- chacha20-poly1305 algorithms with Kerberos.
+This section defines native AEAD profiles for using the AES-GCM, AES-CCM
+ and chacha20-poly1305 algorithms with Kerberos.
 \end_layout
 
 \begin_layout Subsection
@@ -1183,7 +1184,7 @@ Cipherstate Chaining
 \end_layout
 
 \begin_layout Standard
-Kerberos applications using AEAD-only cryptosystems may choose to explicitly
+Kerberos applications using native AEAD cryptosystems may choose to explicitly
  compose the cipherstate (for example, from a sequence number).
  However the only requirement imposed by this profile is that the application
  guarantee that the combination of key and cipherstate be unique for a particula

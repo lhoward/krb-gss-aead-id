@@ -628,7 +628,7 @@ RFC5116
 \end_inset
 
 ).
- The latter class of algorithms, referred to as AEAD-only, may have additional
+ The latter class of algorithms, referred to as native AEAD, may have additional
  constraints (further described in 
 \begin_inset Flex EntityXRef
 status open
@@ -851,11 +851,11 @@ name "sub:AEAD-only"
 
 \end_inset
 
-AEAD-only Encryption Types
+Native AEAD Encryption Types
 \end_layout
 
 \begin_layout Standard
-When used with AEAD-only encryption types as defined in 
+When used with native AEAD encryption types as defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -879,11 +879,11 @@ RFC4121
 \end_layout
 
 \begin_layout Subsubsection
-Restriction on AEAD-only Usage
+Restriction on Native AEAD Usage
 \end_layout
 
 \begin_layout Standard
-Implementations SHALL NOT use AEAD-only encryption types where the cipherstate
+Implementations SHALL NOT use native AEAD encryption types where the cipherstate
  length is less than 12 octets (96 bytes).
 \end_layout
 
@@ -895,7 +895,7 @@ s that expose the Fixed-Common and Fixed-Distinct nonce components independently
 \end_layout
 
 \begin_layout Standard
-AEAD-only encryption types SHOULD only be negotiated for use in GSS-API
+Native AEAD encryption types SHOULD only be negotiated for use in GSS-API
  using the cryptosystem negotiation extension defined in 
 \begin_inset Flex EntityXRef
 status open
@@ -1200,7 +1200,7 @@ RFC4121
 
 .
  The receiver MUST explicitly validate the EC field.
- For the AEAD-only encryption types profiled in 
+ For the native AEAD encryption types profiled in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -1212,7 +1212,7 @@ KRB-AEAD
 
  Section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use, see
  below).
- This specification does not support AEAD-only encryption types that require
+ This specification does not support native AEAD encryption types that require
  the plaintext to be padded.
 \end_layout
 
@@ -1273,7 +1273,7 @@ Receivers MUST verify that the otherwise unprotected EC field is the underlying
 \end_layout
 
 \begin_layout Standard
-DCE interleaves plaintext and associated data; because AEAD-only algorithms
+DCE interleaves plaintext and associated data; because native AEAD algorithms
  such as GCM require associated data to be processed before any plaintext,
  any plaintext and associated data must each be coalesced before encrypting
  or decrypting.
