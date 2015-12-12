@@ -1518,7 +1518,7 @@ reference "sub:KDF-HMAC-SHA2"
 \end_layout
 
 \begin_layout Standard
-Ke = KDF-HMAC-SHA2(base-key, usage | 0xAA)
+Ke = KDF-HMAC-SHA256(base-key, usage | 0xAA)
 \end_layout
 
 \begin_layout Standard

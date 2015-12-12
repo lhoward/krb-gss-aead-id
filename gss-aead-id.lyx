@@ -792,33 +792,12 @@ Updates to RFC 4121
 \end_layout
 
 \begin_layout Subsection
-Existing Encryption Types
+Support for Associated Data
 \end_layout
 
 \begin_layout Standard
-The composition of per-message tokens using the GSS_Wrap_AEAD() and GSS_Unwrap_A
-EAD() functions is identical to 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-RFC4121
-\end_layout
-
-\end_inset
-
- for existing encryption types such as those using the Simplified Profile
- in 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-RFC3961
-\end_layout
-
-\end_inset
-
-, except for the following:
+The generation of per-message tokens using the GSS_Wrap_AEAD() and GSS_Unwrap_AE
+AD() functions is identical to GSS_Wrap() and GSS_Unwrap(), except that:
 \end_layout
 
 \begin_layout Itemize
@@ -830,23 +809,48 @@ the encrypt-with-ad and decrypt-with-ad functions are used instead of the
 the input_assoc_data parameter is passed to these functions
 \end_layout
 
+\begin_layout Subsection
+Existing Encryption Types
+\end_layout
+
 \begin_layout Standard
-Because 
+For existing encryption mechanisms that use a generic composition of encryption
+ and checksum functions (such as the Simplified Profile in 
 \begin_inset Flex EntityXRef
 status open
 
 \begin_layout Plain Layout
-KRB-AEAD
+RFC3961
 \end_layout
 
 \end_inset
 
- defines encrypt-with-ad for existing encryption types as the generic compositio
-n of the encryption and checksum functions, the output of GSS_Wrap_AEAD()
- with no associated data is identical to GSS_Wrap().
+), the only operative difference to 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC4121
+\end_layout
+
+\end_inset
+
+ is that the associated data is prepended to the plaintext before invoking
+ the checksum function.
+\end_layout
+
+\begin_layout Standard
+As such, GSS_Wrap_AEAD() with no associated data has an identical output
+ to GSS_Wrap().
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:AEAD-only"
+
+\end_inset
+
 AEAD-only Encryption Types
 \end_layout
 
@@ -861,7 +865,7 @@ KRB-AEAD
 
 \end_inset
 
-, 
+, the generation of 
 \begin_inset Flex EntityXRef
 status open
 
@@ -871,7 +875,7 @@ RFC4121
 
 \end_inset
 
- is modified as described in this section.
+ per-message tokens is modified as described below.
 \end_layout
 
 \begin_layout Subsubsection
@@ -884,10 +888,10 @@ Implementations SHALL NOT use AEAD-only encryption types where the cipherstate
 \end_layout
 
 \begin_layout RevisionRemark
-TBD: if we want to support CCM with a 32-bit counter, we can remove the
+TBD: if we want to support CCM with a 32-bit counter, we could remove the
  Filler byte and reduce the required cipherstate length to 11 octets.
- This may make it more difficult to use TLS-oriented GCM implementations
- that expose the Fixed-Common and Fixed-Distinct nonce components independently.
+ However, this may make it more difficult to use TLS-oriented GCM implementation
+s that expose the Fixed-Common and Fixed-Distinct nonce components independently.
 \end_layout
 
 \begin_layout Standard
@@ -1266,7 +1270,8 @@ The combination of a context-specific session key and the presence of the
 \begin_layout Standard
 Because the initialization vector has a deterministic (but non-repeating)
  construction, it is safe for use with GCM without any limitation on the
- number of invocations of the authenticated encryption function.
+ number of invocations of the authenticated encryption function other than
+ that imposed by the requirement that the cipherstate not repeat.
 \end_layout
 
 \begin_layout Standard
