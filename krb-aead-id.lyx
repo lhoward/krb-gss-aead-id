@@ -552,12 +552,14 @@ RFC3961
 
 \end_inset
 
- with support for encryption mechanisms that support Authenticated Encryption
- with Associated Data (AEAD) such as Counter with CBC-MAC (CCM) and Galois/Count
-er Mode (GCM).
- These mechanisms often have performance advantage over conventional encryption
- modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing (CTS)
- as they can be efficiently parallelized and implemented in hardware.
+ for encryption mechanisms that support Authenticated Encryption with Associated
+ Data (AEAD), such as Counter with CBC-MAC (CCM) and Galois/Counter Mode
+ (GCM).
+ These mechanisms provide the ability to authenticate additional data associated
+ with a plaintext.
+ In addition, these mechanisms often have performance advantage over conventiona
+l encryption modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing
+ (CTS) as they can be efficiently parallelized.
 \end_layout
 
 \begin_layout Section
@@ -619,8 +621,10 @@ RFC5116
 \end_inset
 
 ).
- These algorithms may have additional constraints to be imposed on cryptosystems
- otherwise defined in terms of 
+ Both approaches are specified here.
+ Algorithms that are specifically designed for AEAD may have additional
+ constraints to be imposed on cryptosystems otherwise defined in terms of
+ 
 \begin_inset Flex EntityXRef
 status open
 
@@ -644,28 +648,6 @@ Updates to RFC 3961
 \end_layout
 
 \begin_layout Subsection
-Removal of Mandatory Requirements
-\end_layout
-
-\begin_layout Standard
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-RFC3961
-\end_layout
-
-\end_inset
-
- requires that an encryption mechanism profile define both an associated
- checksum type and a string-to-key function.
- AEAD algorithms do not provide for integrity protection outside of authenticate
-d encryption, so we remove the requirement for an associated checksum type.
- (An application that only requires integrity protection can use an authenticate
-d encryption mechanism with a zero length plaintext.)
-\end_layout
-
-\begin_layout Subsection
 Additional Requirements
 \end_layout
 
@@ -674,10 +656,12 @@ AEAD algorithms for which reusing an initialization vector/key combination
  destroys security guarantees are unsuitable for use in existing Kerberos
  applications that use the default initial cipherstate.
  To accommodate this we allow an encryption mechanism profile to be marked
- as usable only with ephemeral session keys, and only with applications
- that can explicitly manage the cipherstate.
- We also remove the requirement that a string-to-key function be defined,
- as this is irrelevant when only using randomly generated session keys.
+ as usable only applications that can guarantee the cipherstate to be unique
+ for a particular key.
+ As an additional constraint, these profiles MUST only be used with session
+ keys such as the subkey present in a Kerberos AP-REP.
+ We remove the requirement that a string-to-key function be defined, as
+ this not applicable to ephemeral session keys.
  These algorithms, although assigned 
 \begin_inset Flex EntityXRef
 status open
@@ -695,6 +679,29 @@ RFC3961
 \end_layout
 
 \begin_layout Subsection
+Removal of Mandatory Requirements
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ requires that an encryption mechanism profile define both an associated
+ checksum type and a string-to-key function.
+ AEAD-only algorithms do not provide for integrity protection outside of
+ authenticated encryption, so we remove the requirement for an associated
+ checksum type.
+ (An application that only requires integrity protection can use an authenticate
+d encryption mechanism with a zero length plaintext.)
+\end_layout
+
+\begin_layout Subsection
 Application-managed Cipherestate
 \end_layout
 
@@ -708,9 +715,8 @@ We allow an encryption mechanism to allow the Kerberos application to define
 
 \begin_layout Standard
 Applications may set the cipherstate directly on each invocation of the
- authenticated encryption function; this will typically be the case when
- an application-level counter such as a sequence number can be embedded
- in the cipherstate.
+ authenticated encryption function, as will be the case when an application-leve
+l counter such as a sequence number can be embedded in the cipherstate.
  Alternatively, they may set the initial cipherstate to a random value and
  chain the cipherstate to subsequent invocations.
  Note that using a randomly generated cipherstate may place a limit on the
@@ -769,10 +775,13 @@ RFC3961
 \end_inset
 
 .
- NB: if we want to define completely the existing behavior as implemented
- by SSPI, MIT Kerberos, and Heimdal then we need to make the input plaintext
- and associated data a possibly interleaved sequence, as their generic compositi
-on does not reorder the associated data before the plaintext.
+\end_layout
+
+\begin_layout RevisionRemark
+NB: if we want to define completely the existing behavior as implemented
+ by SSPI, MIT Kerberos, and Heimdal then we need to allow for multiple interleav
+ed plaintexts and associated data, as their generic composition does not
+ reorder the associated data before the plaintext.
 \end_layout
 
 \begin_layout Standard
@@ -876,7 +885,7 @@ name "sec:AEAD-Profiles"
 
 \end_inset
 
-AEAD-only Algorithm Profiles for AES
+AEAD-only Algorithm Profiles
 \end_layout
 
 \begin_layout Subsection
@@ -890,8 +899,8 @@ Protocol Key Representation
 \end_layout
 
 \begin_layout Standard
-Because the AES key space is dense, random or pseudo-random octet strings
- are used directly as keys.
+Because the key spaces for the profiles defined below are dense, random
+ or pseudo-random octet strings are used directly as keys.
 \end_layout
 
 \begin_layout Subsection
@@ -901,11 +910,16 @@ name "sub:Key-Derivation-Function"
 
 \end_inset
 
-Key Derivation Function
+Key Derivation Functions
+\end_layout
+
+\begin_layout Subsubsection
+Common definitions
 \end_layout
 
 \begin_layout Standard
-We use the key derivation function from 
+The profiles defined in this section use the key derivation functions from
+ 
 \begin_inset Flex EntityXRef
 status open
 
@@ -915,7 +929,7 @@ SP800-108
 
 \end_inset
 
- section 5.2, using CMAC as the PRF.
+ section 5 and the following common definitions:
 \end_layout
 
 \begin_layout Standard
@@ -974,9 +988,40 @@ k-truncate is defined in RFC3961 section 5.1
 The | operator indicates concatenation.
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
+
 
 \end_layout
+
+\begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:KDF-CMAC"
+
+\end_inset
+
+KDF for GCM and CCM
+\end_layout
+
+\begin_layout Standard
+The GCM and CCM profiles defined below use the counter/feedback key derivation
+ function from 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+SP800-108
+\end_layout
+
+\end_inset
+
+ section 5.2, using CMAC as the PRF.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
 
 \begin_layout Plain Layout
 
@@ -1000,6 +1045,155 @@ KDF-CMAC(key, label) = k-truncate(K1 | K2...)
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:KDF-HMAC-SHA2"
+
+\end_inset
+
+KDF for chacha20-poly1305
+\end_layout
+
+\begin_layout Standard
+The chacha20-poly1305 profile defined in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:chacha20-poly1305"
+
+\end_inset
+
+ uses the counter mode key derivation function from 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+SP800-108
+\end_layout
+
+\end_inset
+
+ section 5.1, using HMAC-SHA-256 as the PRF.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+K0 = zeros
+\end_layout
+
+\begin_layout Plain Layout
+
+Ki = HMAC-SHA-256(key, i | label | 0x00 | k)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+KDF-HMAC-SHA2(key, label) = k-truncate(K1 | K2...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Cipherstate-chaining"
+
+\end_inset
+
+Cipherstate chaining
+\end_layout
+
+\begin_layout Standard
+It is anticipated that applications using these profiles will generally
+ compose the cipherstate explicitly (for example, from a sequence number).
+ However the only requirement imposed by this profile is that the application
+ guarantee that the combination of key and cipherstate be unique for a particula
+r invocation of the authenticated encryption and decryption functions.
+ An application MAY use the output cipherstate from encrypt-with-ad and
+ decrypt-with-ad in subsequent invocations of those functions.
+ For the profiles defined in this section, the output cipherstate is defined
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+D[N..M] = M - N + 1 octets of D, starting at octet M
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+fixed = oldstate[0..3]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+counter = oldstate[4..11]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newstate = fixed | counter + 1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+The | operator indicates concatenation.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+The + operator indicates addition of 64-bit integers expressed as eight
+ octets in big endian order, raising an error on overflow.
+  
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the invocation counter described above is independent of the block
+ counter implemented by the underlying encryption function.
 \end_layout
 
 \begin_layout Subsection
@@ -1029,8 +1223,8 @@ GCM
 \end_inset
 
  section 7, using AES-128 as the block cipher.
- A key length of 16 octets (128 bits) is used, and an authentication tag
- with a length of 16 octets (128 bits) is used.
+ A key length of 16 octets (128 bits) is used, along with an authentication
+ tag with a length of 16 octets (128 bits).
  The following parameters apply to the aes128-gcm-128 encryption type:
 \end_layout
 
@@ -1050,8 +1244,8 @@ specific key structure: one protocol format key, Ke
 \end_layout
 
 \begin_layout Standard
-Ke: the encryption key, inputted into the AES-GCM encryption function defined
- as encrypt-with-ad and decrypt-with-ad below
+Ke: the encryption key, inputted into the AES-GCM authenticated encryption
+ function defined as encrypt-with-ad and decrypt-with-ad below
 \end_layout
 
 \begin_layout Standard
@@ -1074,7 +1268,7 @@ default string-to-key parameters: none
 key-deriviation function: KDF-CMAC as defined in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Key-Derivation-Function"
+reference "sub:KDF-CMAC"
 
 \end_inset
 
@@ -1095,9 +1289,15 @@ initial cipherstate: all bits zero, or specified by application
 \end_layout
 
 \begin_layout Standard
-subsequent cipherstate: if not specified by application, then octets 4..11
- are used as a 64-bit counter in big endian order (independent of the block
- counter in octets 12..15)
+subsequent cipherstate: the previous cipherstate incremented by one per
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Cipherstate-chaining"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1148,8 +1348,8 @@ CCM
 \end_inset
 
  section 6, using AES-128 as the block cipher.
- A key length of 16 octets (128 bits) is used, and an authentication tag
- with a length t of 16 octets (128 bits) is used.
+ A key length of 16 octets (128 bits) is used, along with an authentication
+ tag with a length t of 16 octets (128 bits).
  The nonce length n is 12 octets, and the corresponding counter length q
  is 3 octets.
  The following parameters apply to the aes128-ccm-128 encryption type:
@@ -1171,8 +1371,8 @@ specific key structure: one protocol format key, Ke
 \end_layout
 
 \begin_layout Standard
-Ke: the encryption key, inputted into the AES-CCM encryption function defined
- as encrypt-with-ad and decrypt-with-ad below
+Ke: the encryption key, inputted into the AES-CCM authenticated encryption
+ function defined as encrypt-with-ad and decrypt-with-ad below
 \end_layout
 
 \begin_layout Standard
@@ -1195,7 +1395,7 @@ default string-to-key parameters: none
 key-deriviation function: KDF-CMAC as defined in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Key-Derivation-Function"
+reference "sub:KDF-CMAC"
 
 \end_inset
 
@@ -1216,9 +1416,15 @@ initial cipherstate: all bits zero, or specified by application
 \end_layout
 
 \begin_layout Standard
-subsequent cipherstate: if not specified by application, then octets 5..12
- are used as a 64-bit counter in big endian order (independent of the block
- counter in octets 13..15)
+subsequent cipherstate: the previous cipherstate incremented by one per
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Cipherstate-chaining"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1252,6 +1458,116 @@ As for aes128-ccm-128, but using AES-256 as the block cipher and with a
  key length of 32 octets (256 bits).
 \end_layout
 
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:chacha20-poly1305"
+
+\end_inset
+
+chacha20-poly1305
+\end_layout
+
+\begin_layout Standard
+This profile is based on 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC7539
+\end_layout
+
+\end_inset
+
+ section 2.8.
+ A key length of 32 octets (256 bits) is used, along with an authentication
+ tag length of 16 octets (128 bits).
+\end_layout
+
+\begin_layout Standard
+protocol key format: as defined in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Protocol-Key-Representation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+specific key structure: one protocol format key, Ke
+\end_layout
+
+\begin_layout Standard
+Ke: the encryption key, inputted into the chacha20-poly1305 authenticated
+ encryption function defined as encrypt-with-ad and decrypt-with-ad below
+\end_layout
+
+\begin_layout Standard
+required checksum mechanism: none
+\end_layout
+
+\begin_layout Standard
+key-generation seed length: key size (256 bits)
+\end_layout
+
+\begin_layout Standard
+string-to-key function: none
+\end_layout
+
+\begin_layout Standard
+default string-to-key parameters: none
+\end_layout
+
+\begin_layout Standard
+key-deriviation function: KDF-HMAC-SHA256 as defined in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:KDF-HMAC-SHA2"
+
+\end_inset
+
+.
+ The key usage number is expressed as four octets in big endian order.
+\end_layout
+
+\begin_layout Standard
+Ke = KDF-HMAC-SHA2(base-key, usage | 0xAA)
+\end_layout
+
+\begin_layout Standard
+cipherstate: a 96-bit initialization vector
+\end_layout
+
+\begin_layout Standard
+initial cipherstate: all bits zero, or specified by application
+\end_layout
+
+\begin_layout Standard
+subsequent cipherstate: the previous cipherstate incremented by one per
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Cipherstate-chaining"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+encrypt-with-ad function: AEAD construction of chacha20 with poly1305
+\end_layout
+
+\begin_layout Standard
+decrypt-with-ad function: AEAD construction of chacha20 with poly1305
+\end_layout
+
+\begin_layout Standard
+pseudo random function: PRF = KDF-HMAC-SHA2(base-key, "prf" | octet-string)
+\end_layout
+
 \begin_layout Section
 Security Considerations
 \end_layout
@@ -1270,7 +1586,7 @@ IANA is requested to assign:
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
+<lyxtabular version="3" rows="6" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -1392,6 +1708,35 @@ aes128-gcm-128
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TBD4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+aes256-gcm-128
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[this document]
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -1405,7 +1750,7 @@ TBD4
 \begin_inset Text
 
 \begin_layout Plain Layout
-aes256-gcm-128
+chacha20-poly1305
 \end_layout
 
 \end_inset
@@ -1464,8 +1809,8 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset href
 LatexCommand href
-name "RFC3962"
-target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml"
+name "RFC5116"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml"
 
 \end_inset
 
@@ -1484,8 +1829,8 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset href
 LatexCommand href
-name "RFC5116"
-target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml"
+name "RFC7539"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7539.xml"
 
 \end_inset
 
@@ -1544,6 +1889,30 @@ status open
  Technology</organization></author><date year="2009" month="October"/></front><f
 ormat type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-108/sp800
 -108.pdf"/></reference>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Informative References
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC3962"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset

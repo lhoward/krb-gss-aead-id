@@ -690,7 +690,7 @@ KRB-AEAD
 .
 \end_layout
 
-\begin_layout Standard
+\begin_layout RevisionRemark
 TBD: do we allow interleaved plaintext and associated data (which SSPI does
  and indeed requires for DCE), or do we limit it to a single octet string
  each.
@@ -817,7 +817,8 @@ Updates to RFC 4121
 
 \begin_layout Standard
 The following updates apply to the Kerberos 5 GSS-API mechanism when used
- with AEAD-only encryption types (as defined by 
+ with AEAD-only encryption types.
+ (AEAD-only encryption types as defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -827,17 +828,15 @@ KRB-AEAD
 
 \end_inset
 
- section 4.2).
- (These encryption types permit the application to manage the cipherstate
- and are only suitable for use with ephemeral session keys.) Implementations
- SHALL NOT use AEAD-only encryption types where the cipherstate length is
- less than 12 octets (96 bytes).
- (TBD if we want to support CCM with a 32-bit counter, we should make it
- fit into 11 octets.)
+ section 4.2 allow the application to manage the cipherstate and are only
+ suitable for use with ephemeral session keys.)
 \end_layout
 
 \begin_layout Standard
-AEAD-only encryption types SHOULD only be negotiated in GSS-API via 
+Implementations SHALL NOT use AEAD-only encryption types where the cipherstate
+ length is less than 12 octets (96 bytes).
+ AEAD-only encryption types SHOULD only be negotiated for use in GSS-API
+ using the cryptosystem negotiation extension defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -848,6 +847,11 @@ RFC4537
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Revision
+TBD: if we want to support CCM with a 32-bit counter, we should make it
+ fit into 11 octets.
 \end_layout
 
 \begin_layout Subsection
@@ -1093,7 +1097,7 @@ RFC4121
 
  section 4.2.6) SHALL NOT be appended to the plaintext data before encryption.
  Instead, the TOK_ID, Flags and SND_SEQ fields of the token header are protected
- by the initialization vector.
+ by the initialization vector (cipherstate).
  The EC field is unprotected, a change from 
 \begin_inset Flex EntityXRef
 status open
@@ -1106,7 +1110,7 @@ RFC4121
 
 ; however, because it is a constant value, it can be validated by the receiver.
  The receiver MUST validate the EC field.
- For the AEAD encryption types defined in 
+ For the AEAD-only encryption types profiled in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -1116,8 +1120,10 @@ KRB-AEAD
 
 \end_inset
 
- section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use as described
+ section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use, see
  below).
+ This specification does not support AEAD-only encryption types that require
+ padding.
 \end_layout
 
 \begin_layout Standard
@@ -1146,9 +1152,8 @@ Because native AEAD encryption types lack an explicit checksum operation,
  a plaintext length of zero.
  Even though the same derived key is used, the key usage number and initializati
 on vector serve to disambiguate MIC from Wrap tokens.
- In this case where there is no ciphertext, the octet string output by the
- encrypt-with-ad function contains the authentication tag, which is placed
- in the SGN_CKSUM field of the token.
+ The octet string output by the encrypt-with-ad function contains the authentica
+tion tag, which is placed in the SGN_CKSUM field of the token.
 \end_layout
 
 \begin_layout Subsection
@@ -1178,8 +1183,8 @@ DCE interleaves plaintext and associated data; because AEAD-only algorithms
  such as GCM require associated data to be processed before any plaintext,
  any plaintext and associated data must each be coalesced before encrypting
  or decrypting.
- XXX do we describe this here or do we define AEAD as taking interleaved
- data.
+ This document does not specify an API for processing interleaved plaintext
+ and associated data.
 \end_layout
 
 \begin_layout Section
@@ -1362,8 +1367,8 @@ status open
  of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M."
  surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute
  of Standards and Technology</organization></author><date year="2007" month="Nov
-emberober"/></front><format type="HTML" target="http://csrc.nist.gov/publications/
-nistpubs/800-38D/SP-800-38D.pdf"/></reference>
+ember"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nist
+pubs/800-38D/SP-800-38D.pdf"/></reference>
 \end_layout
 
 \end_inset
