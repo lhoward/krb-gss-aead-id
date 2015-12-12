@@ -1187,7 +1187,7 @@ KRB-AEAD
 In Wrap tokens that do not provide for confidentiality, the first 16 octets
  of the token SHALL NOT be appended to the to-be-signed plaintext data.
  As with Wrap tokens that do provide for confidentiality, all fields except
- EC are protected by the initialization vector.
+ EC and RRC are protected by the initialization vector.
  The receiver MUST validate that EC is the correct constant value.
  For the AEAD encryption types defined in 
 \begin_inset Flex EntityXRef
