@@ -705,9 +705,9 @@ RFC7539
 
 \end_inset
 
- have the property where reusing a particular combination of secret key
- and initialization vector destroys all security guarantees of the underlying
- mechanism.
+ have the property where the reuse of a particular combination of secret
+ key and initialization vector destroys all security guarantees of the underlyin
+g mechanism.
  This contrasts with existing Kerberos ciphers such as those defined in
  
 \begin_inset Flex EntityXRef
