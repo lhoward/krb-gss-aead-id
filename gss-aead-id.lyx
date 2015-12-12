@@ -1339,18 +1339,14 @@ target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Flex BibXML
+\begin_inset Flex EmbeddedBibXML
 status open
 
 \begin_layout Plain Layout
-\begin_inset CommandInset href
-LatexCommand href
-name "KRB-AEAD"
-target "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.howard-krb-aead.xml"
-
-\end_inset
-
-
+<reference anchor="KRB-AEAD"><front><title>AEAD Encryption Types for Kerberos
+ 5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organiza
+tion>PADL Software</organization></author><date year="2015" month="December"/></
+front></reference>
 \end_layout
 
 \end_inset

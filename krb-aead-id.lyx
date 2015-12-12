@@ -282,7 +282,7 @@ AEAD Encryption Types for Kerberos 5
 status open
 
 \begin_layout Plain Layout
-draft-howard-krb-aead-00.txt
+draft-howard-krb-aead-00
 \end_layout
 
 \end_inset
@@ -518,8 +518,8 @@ RFC3961
 
 \end_inset
 
- with support for encryption mechanisms that can authenticate associated
- data such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM).
+ to support encryption mechanisms that can authenticate associated data
+ such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM).
 \end_layout
 
 \begin_layout Standard
@@ -606,11 +606,9 @@ RFC3961
  is, it provides both for confidentiality and a way to check the for integrity
  and authenticity.
  It can be useful in many applications to provide for the integrity and
- authenticity of some Associated Data (AD) that is not encrypted; this is
+ authenticity of some Associated Data (AD) that is not encrypted: this is
  termed Authenticated Encryption with Associated Data (AEAD).
- This can be done by the generic composition of existing encryption and
- checksum mechanisms, and it can also be done by algorithms which specifically
- provide for AEAD (see 
+ A general description of AEAD is given in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -620,11 +618,30 @@ RFC5116
 
 \end_inset
 
-).
- Both approaches are specified here.
- Algorithms that are specifically designed for AEAD may have additional
- constraints to be imposed on cryptosystems otherwise defined in terms of
- 
+.
+\end_layout
+
+\begin_layout Standard
+Existing encryption and checksum mechanisms can provide AEAD through generic
+ composition, where the checksum protects the concatenated associated data
+ and plaintext.
+ Alternatively, modern encryption mechanisms such as those profiled in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC5116
+\end_layout
+
+\end_inset
+
+ explicitly provide for AEAD.
+ Both approaches are specified in this document.
+\end_layout
+
+\begin_layout Standard
+Algorithms that are specifically designed for AEAD may have additional constrain
+ts to be imposed on cryptosystems otherwise defined in terms of 
 \begin_inset Flex EntityXRef
 status open
 
@@ -635,6 +652,7 @@ RFC3961
 \end_inset
 
 .
+ We term these algorithms AEAD-only.
 \end_layout
 
 \begin_layout Section
@@ -647,22 +665,8 @@ name "sec:Updates"
 Updates to RFC 3961
 \end_layout
 
-\begin_layout Subsection
-Additional Requirements
-\end_layout
-
 \begin_layout Standard
-AEAD algorithms for which reusing an initialization vector/key combination
- destroys security guarantees are unsuitable for use in existing Kerberos
- applications that use the default initial cipherstate.
- To accommodate this we allow an encryption mechanism profile to be marked
- as usable only applications that can guarantee the cipherstate to be unique
- for a particular key.
- As an additional constraint, these profiles MUST only be used with session
- keys such as the subkey present in a Kerberos AP-REP.
- We remove the requirement that a string-to-key function be defined, as
- this not applicable to ephemeral session keys.
- These algorithms, although assigned 
+The changes described below amend 
 \begin_inset Flex EntityXRef
 status open
 
@@ -672,10 +676,77 @@ RFC3961
 
 \end_inset
 
- encryption type numbers, MUST NOT be used in Kerberos protocol messages
- where long-term keys are used or the initial cipherstate is unspecified.
- For the purposes of this document and other documents which reference this,
- such algorithms shall be referred to as AEAD-only.
+ for use with AEAD-only encryption types.
+\end_layout
+
+\begin_layout Subsection
+Additional Requirements
+\end_layout
+
+\begin_layout Standard
+The AEAD-only algorithms profiled in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC5116
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC7539
+\end_layout
+
+\end_inset
+
+ have the property where reusing a particular combination of secret key
+ and initialization vector destroys all security guarantees of the underlying
+ mechanism.
+ This contrasts with existing Kerberos ciphers such as those defined in
+ 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3962
+\end_layout
+
+\end_inset
+
+ where the application can reuse the same initial cipherstate, and a random
+ confounder obviates the need for an initialization vector.
+\end_layout
+
+\begin_layout Standard
+To accommodate the use of AEAD-only cryptosystems with Kerberos, we allow
+ an encryption mechanism profile to be marked as usable only by applications
+ that can guarantee that each invocation of the encryption function with
+ a particular key will use a unique cipherstate.
+ As an additional constraint, these profiles MUST only be used with session
+ keys such as the subkey present in a Kerberos AP-REP.
+\end_layout
+
+\begin_layout Standard
+To take advantage of existing cryptosystem negotiation facilities such as
+ 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC4537
+\end_layout
+
+\end_inset
+
+, AEAD-only encryption types share the same namespace as existing Kerberos
+ algorithms.
+ However, they MUST NOT be used with long-term keys or where the initial
+ cipherstate is unspecified.
 \end_layout
 
 \begin_layout Subsection
@@ -694,11 +765,19 @@ RFC3961
 
  requires that an encryption mechanism profile define both an associated
  checksum type and a string-to-key function.
- AEAD-only algorithms do not provide for integrity protection outside of
+\end_layout
+
+\begin_layout Standard
+AEAD-only algorithms do not provide for integrity protection outside of
  authenticated encryption, so we remove the requirement for an associated
  checksum type.
- (An application that only requires integrity protection can use an authenticate
-d encryption mechanism with a zero length plaintext.)
+ (An application that only requires integrity protection SHALL pass a zero-lengt
+h plaintext to the authenticated encryption or decryption function.)
+\end_layout
+
+\begin_layout Standard
+Ephemeral session keys can be generated directly, so we remove the requirement
+ that a string-to-key function be defined.
 \end_layout
 
 \begin_layout Subsection
@@ -707,19 +786,26 @@ Application-managed Cipherestate
 
 \begin_layout Standard
 We allow an encryption mechanism to allow the Kerberos application to define
- the initial cipherstate in order to ensure it is non-repeating.
- Applications that impose a minimum octet length requirement on the cipherstate
- MUST NOT be used with encryption mechanisms with a shorter cipherstate
- length.
+ the initial cipherstate in order to ensure its uniqueness when combined
+ with a particular key.
 \end_layout
 
 \begin_layout Standard
-Applications may set the cipherstate directly on each invocation of the
- authenticated encryption function, as will be the case when an application-leve
-l counter such as a sequence number can be embedded in the cipherstate.
- Alternatively, they may set the initial cipherstate to a random value and
- chain the cipherstate to subsequent invocations.
- Note that using a randomly generated cipherstate may place a limit on the
+Applications that support AEAD-only ciphers MAY impose a minimum octet length
+ requirement on the cipherstate.
+ Such applications MUST NOT be used with cryptosystems with a shorter cipherstat
+e length.
+\end_layout
+
+\begin_layout Standard
+Applications MAY set the cipherstate directly on each invocation of the
+ authenticated encryption function.
+ This allows an application-level counter such as a sequence number to be
+ embedded in the cipherstate.
+ Alternatively, an application MAY set the initial cipherstate to a random
+ value and pass the cipherstate output from the authenticated encryption
+ and decryption functions to subsequent invocations.
+ Using a randomly generated initial cipherstate may place a limit on the
  number of invocations of the authenticated encryption function when compared
  with a deterministic construction (see 
 \begin_inset Flex EntityXRef
@@ -731,7 +817,7 @@ GCM
 
 \end_inset
 
- section 8.3).
+ Section 8.3).
 \end_layout
 
 \begin_layout Subsection
@@ -756,6 +842,19 @@ decrypt-with-ad (specific-key, state, associated data, octet string)->(state,
 \begin_layout Standard
 The associated data parameter is input only and contains data that is to
  be authenticated, but not encrypted.
+ If the associated data or plaintext are zero length strings, then these
+ functions are respectively equivalent to the checksum and encryption functions
+ described in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -763,8 +862,8 @@ AEAD with Simplified Profile
 \end_layout
 
 \begin_layout Standard
-We allow the authentication of Associated Data with existing cryptosystems
- that follow the Simplified Profile defined in 
+We allow the authentication of Associated Data with existing (non-AEAD-only)
+ cryptosystems that follow the Simplified Profile defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -778,10 +877,8 @@ RFC3961
 \end_layout
 
 \begin_layout RevisionRemark
-NB: if we want to define completely the existing behavior as implemented
- by SSPI, MIT Kerberos, and Heimdal then we need to allow for multiple interleav
-ed plaintexts and associated data, as their generic composition does not
- reorder the associated data before the plaintext.
+NB: this does not allow for interleaved plaintext and associated data, which
+ is not sufficient for DCE RPC interoperability with Microsoft Windows SSPI.
 \end_layout
 
 \begin_layout Standard
@@ -888,6 +985,11 @@ name "sec:AEAD-Profiles"
 AEAD-only Algorithm Profiles
 \end_layout
 
+\begin_layout Standard
+This section defines AEAD-only profiles for AES-GCM, AES-CCM and chacha20-poly13
+05.
+\end_layout
+
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
@@ -899,7 +1001,7 @@ Protocol Key Representation
 \end_layout
 
 \begin_layout Standard
-Because the key spaces for the profiles defined below are dense, random
+Because the key spaces for the cryptosystems defined below are dense, random
  or pseudo-random octet strings are used directly as keys.
 \end_layout
 
@@ -918,8 +1020,7 @@ Common definitions
 \end_layout
 
 \begin_layout Standard
-The profiles defined in this section use the key derivation functions from
- 
+The key derivation functions from 
 \begin_inset Flex EntityXRef
 status open
 
@@ -929,68 +1030,43 @@ SP800-108
 
 \end_inset
 
- section 5 and the following common definitions:
+ Section 5 are used by the profiles defined in this section.
+ The following common definitions are made:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout Description
 key: The initial key from which subsequent keys are derived
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
+\begin_layout Description
 label: An octet string describing the intended usage of the derived key
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Description
+i: A counter, expressed as four octets in big endian order
 \end_layout
 
-\begin_layout Plain Layout
-
-i: Counter, expressed as four octets in big endian order
+\begin_layout Description
+k: The length in bits of the key to be outputted, identical to the length
+ of the original key, expressed as four octets in big endian order.
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-k: Length in bits of the key to be outputted, identical to the length of
- the initial key, expressed as four octets in big endian order
-\end_layout
+\begin_layout Description
+k-truncate: As defined in 
+\begin_inset Flex EntityXRef
+status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-k-truncate is defined in RFC3961 section 5.1
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-The | operator indicates concatenation.
+RFC3961
 \end_layout
 
 \end_inset
 
+ Section 5.1.
+\end_layout
 
+\begin_layout Standard
+The | operator indicates concatenation.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1000,7 +1076,7 @@ name "sub:KDF-CMAC"
 
 \end_inset
 
-KDF for GCM and CCM
+KDF for AES-GCM and AES-CCM
 \end_layout
 
 \begin_layout Standard
@@ -1015,36 +1091,25 @@ SP800-108
 
 \end_inset
 
- section 5.2, using CMAC as the PRF.
+ Section 5.2, using CMAC as the PRF with the underlying block cipher appropriate
+ to the base key.
+ The composition is given below:
+\end_layout
+
+\begin_layout Description
+K0: k bits of zero
+\end_layout
+
+\begin_layout Description
+Ki: CMAC(key, K(i-1) | i | label | 0x00 | k)
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-K0 = zeros
-\end_layout
-
-\begin_layout Plain Layout
-
-Ki = CMAC(key, K(i-1) | i | label | 0x00 | k)
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
 KDF-CMAC(key, label) = k-truncate(K1 | K2...)
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+The iteration count i is one for AES-128 keys and two for AES-256 keys.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1075,36 +1140,20 @@ SP800-108
 
 \end_inset
 
- section 5.1, using HMAC-SHA-256 as the PRF.
+ Section 5.1, using HMAC-SHA-256 as the PRF.
+ The composition is given below:
+\end_layout
+
+\begin_layout Description
+K0: k bits of zero
+\end_layout
+
+\begin_layout Description
+Ki: HMAC-SHA-256(key, i | label | 0x00 | k)
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-K0 = zeros
-\end_layout
-
-\begin_layout Plain Layout
-
-Ki = HMAC-SHA-256(key, i | label | 0x00 | k)
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-KDF-HMAC-SHA2(key, label) = k-truncate(K1 | K2...)
-\end_layout
-
-\end_inset
-
-
+KDF-HMAC-SHA2(key, label) = k-truncate(K1)
 \end_layout
 
 \begin_layout Subsection
@@ -1118,77 +1167,51 @@ Cipherstate chaining
 \end_layout
 
 \begin_layout Standard
-It is anticipated that applications using these profiles will generally
- compose the cipherstate explicitly (for example, from a sequence number).
+Kerberos applications using AEAD-only cryptosystems may choose to explicitly
+ compose the cipherstate, for example, from a sequence number.
  However the only requirement imposed by this profile is that the application
  guarantee that the combination of key and cipherstate be unique for a particula
-r invocation of the authenticated encryption and decryption functions.
- An application MAY use the output cipherstate from encrypt-with-ad and
- decrypt-with-ad in subsequent invocations of those functions.
- For the profiles defined in this section, the output cipherstate is defined
- as follows:
+r invocation of the authenticated encryption function.
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
+An application MAY use the output cipherstate from encrypt-with-ad and decrypt-w
+ith-ad in subsequent invocations of those functions.
+ For the profiles defined in this section, the output cipherstate is composed
+ as follows:
+\end_layout
+
+\begin_layout Description
+D[N..M] M - N + 1 octets of D, starting at octet M
+\end_layout
+
+\begin_layout Description
+fixed oldstate[0..3]
+\end_layout
+
+\begin_layout Description
+counter oldstate[4..11]
+\end_layout
+
+\begin_layout Description
+newstate fixed | counter + 1
+\end_layout
+
+\begin_layout Standard
+The + operator indicates addition of 64-bit integers expressed as eight
+ octets in big endian order, raising an error on overflow.
+ This composition is compatible with the recommended nonce formation defined
+ in 
+\begin_inset Flex EntityXRef
 status open
 
 \begin_layout Plain Layout
-
-D[N..M] = M - N + 1 octets of D, starting at octet M
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-fixed = oldstate[0..3]
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-counter = oldstate[4..11]
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-newstate = fixed | counter + 1
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-The | operator indicates concatenation.
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-The + operator indicates addition of 64-bit integers expressed as eight
- octets in big endian order, raising an error on overflow.
-  
+RFC5116
 \end_layout
 
 \end_inset
 
-
+ Section 3.2.
 \end_layout
 
 \begin_layout Standard
@@ -1211,7 +1234,7 @@ RFC5116
 
 \end_inset
 
- section 5.1.
+ Section 5.1.
  The GCM authenticated encryption algorithm works as specified in 
 \begin_inset Flex EntityXRef
 status open
@@ -1222,7 +1245,7 @@ GCM
 
 \end_inset
 
- section 7, using AES-128 as the block cipher.
+ Section 7, using AES-128 as the block cipher.
  A key length of 16 octets (128 bits) is used, along with an authentication
  tag with a length of 16 octets (128 bits).
  The following parameters apply to the aes128-gcm-128 encryption type:
@@ -1336,7 +1359,7 @@ RFC5116
 
 \end_inset
 
- section 5.3.
+ Section 5.3.
  The CCM authentication encryption algorithm works as specified in 
 \begin_inset Flex EntityXRef
 status open
@@ -1347,7 +1370,7 @@ CCM
 
 \end_inset
 
- section 6, using AES-128 as the block cipher.
+ Section 6, using AES-128 as the block cipher.
  A key length of 16 octets (128 bits) is used, along with an authentication
  tag with a length t of 16 octets (128 bits).
  The nonce length n is 12 octets, and the corresponding counter length q
@@ -1440,8 +1463,8 @@ pseudo random function: PRF = KDF-CMAC(base-key, "prf" | octet-string)
 \end_layout
 
 \begin_layout Standard
-TBD: would it be better to use a nonce length of 11 octets (n = 11, q =
- 4) so the counter length is 32 bits? This would put a more reasonable limit
+TBD: it may be better to use a nonce length of 11 octets (n = 11, q = 4)
+ so the counter length is 32 bits? This would put a more reasonable limit
  on message size and is compatible with the cipherstate requirements for
  GSS-API.
  On the other hand, it may make it more difficult to use TLS-oriented GCM
@@ -1479,7 +1502,7 @@ RFC7539
 
 \end_inset
 
- section 2.8.
+ Section 2.8.
  A key length of 32 octets (256 bits) is used, along with an authentication
  tag length of 16 octets (128 bits).
 \end_layout
@@ -1789,8 +1812,48 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset href
 LatexCommand href
+name "RFC2119"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
 name "RFC3961"
 target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC4537"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml"
 
 \end_inset
 
