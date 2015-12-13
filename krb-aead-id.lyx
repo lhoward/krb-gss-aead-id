@@ -941,7 +941,7 @@ encrypt-with-ad    conf = Random string of length c
 
 \begin_layout Plain Layout
 
-                             plaintext | pad
+                             plaintext | pad)
 \end_layout
 
 \begin_layout Plain Layout
@@ -960,22 +960,27 @@ encrypt-with-ad    conf = Random string of length c
 
 \begin_layout Plain Layout
 
-decrypt-with-ad    (C1,H1) = ciphertext
+decrypt-with-ad    (C1, H1) = ciphertext
 \end_layout
 
 \begin_layout Plain Layout
 
-                   (P1, newIV) = D(Ke, C1, associated data,
+                   (P1, newIV) = D(Ke, C1, oldstate.ivec)
 \end_layout
 
 \begin_layout Plain Layout
 
-                                   oldstate.ivec)
+                   conf = P1[1..c]
 \end_layout
 
 \begin_layout Plain Layout
 
-                   if (H1 != HMAC(Ki, P1)[1..h]))
+                   signdata = conf | associated data | P1[c+1..]
+\end_layout
+
+\begin_layout Plain Layout
+
+                   if (H1 != HMAC(Ki, signdata)[1..h]))
 \end_layout
 
 \begin_layout Plain Layout
