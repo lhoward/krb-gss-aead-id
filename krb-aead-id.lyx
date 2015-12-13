@@ -897,6 +897,17 @@ RFC3961
 \end_inset
 
  through the generic composition of the encryption and checksum functions.
+ For consistency with 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ the following definition uses 1-based indexing.
 \end_layout
 
 \begin_layout Standard
@@ -1204,15 +1215,15 @@ ith-ad in subsequent invocations of those functions.
 \end_layout
 
 \begin_layout Description
-D[N..M] M - N + 1 octets of D, starting at octet M
+D[N..M] M - N + 1 octets of D, starting at octet M (1-based)
 \end_layout
 
 \begin_layout Description
-fixed oldstate[0..3]
+fixed oldstate[1..4]
 \end_layout
 
 \begin_layout Description
-counter oldstate[4..11]
+counter oldstate[5..12]
 \end_layout
 
 \begin_layout Description
@@ -1408,7 +1419,7 @@ RFC5116
 \end_inset
 
  Section 5.3.
- The CCM authentication encryption algorithm works as specified in 
+ The CCM authenticated encryption algorithm works as specified in 
 \begin_inset Flex EntityXRef
 status open
 
