@@ -1757,6 +1757,15 @@ chacha20-poly1305
 \end_layout
 
 \begin_layout Section
+Acknowledgements
+\end_layout
+
+\begin_layout Standard
+The author would like to thank the following individuals for their comments
+ and suggestions: Nicolas Williams and Greg Hudson.
+\end_layout
+
+\begin_layout Section
 Normative References
 \end_layout
 
