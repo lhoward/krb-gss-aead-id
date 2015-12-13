@@ -815,8 +815,9 @@ Applications that support native AEAD ciphers MAY impose a minimum octet
 \begin_layout Standard
 Applications MAY set the cipherstate directly on each invocation of the
  authenticated encryption function.
- This allows a non-repeating application counter such as a sequence number
- to be embedded in the cipherstate.
+ This allows a non-repeating counter such as a sequence number to be embedded
+ in the cipherstate, without preventing the application from processing
+ out-of-order messages.
  Alternatively, an application MAY set the initial cipherstate to a random
  value and pass the cipherstate output from the authenticated encryption
  and decryption functions to subsequent invocations.
