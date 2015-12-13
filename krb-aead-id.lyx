@@ -720,7 +720,7 @@ RFC3962
 
 \end_inset
 
- where the application can reuse the same initial cipherstatem, as a random
+ where the application can reuse the same initial cipherstate, as a random
  confounder obviates the need for an initialization vector.
 \end_layout
 
@@ -1222,10 +1222,10 @@ newstate fixed | counter + 1
 \begin_layout Standard
 The + operator indicates addition of 64-bit integers expressed as eight
  octets in big endian order, raising an error after 2^64 invocations.
- (Note that the application may specify a non-zero ial cipherstate, so the
- implementation must check the invocation count for overflow rather than
- the cipherstate counter.) This composition is compatible with the recommended
- nonce formation defined in 
+ (Note that the application may specify a non-zero initial cipherstate,
+ so the implementation must check the invocation count for overflow rather
+ than the cipherstate counter.) This composition is compatible with the recommend
+ed nonce formation defined in 
 \begin_inset Flex EntityXRef
 status open
 
