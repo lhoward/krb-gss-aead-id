@@ -555,8 +555,7 @@ RFC4121
  with support for encryption mechanisms that support Authenticated Encryption
  with Associated Data (AEAD).
  These mechanisms often have performance advantage over conventional encryption
- modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing (CTS)
- as they can be efficiently parallelized and do not expand the plaintext
+ modes as they can be efficiently parallelized and do not expand the plaintext
  when encrypting.
 \end_layout
 
@@ -613,8 +612,8 @@ RFC4121
 
 \begin_layout Standard
 It can be useful in many applications to provide for the integrity and authentic
-ity of some Associated Data (AD) that is not encrypted; this is termed Authentic
-ated Encryption with Associated Data (AEAD).
+ity of some additional unencrypted data; this is termed Authenticated Encryption
+ with Associated Data (AEAD).
  This can be done by the generic composition of existing encryption and
  checksum mechanisms, or using algorithms which specifically provide for
  AEAD (see 
@@ -837,11 +836,8 @@ RFC4121
 
  is that the associated data is prepended to the plaintext before invoking
  the checksum function.
-\end_layout
-
-\begin_layout Standard
-As such, GSS_Wrap_AEAD() with no associated data has an identical output
- to GSS_Wrap().
+ As such, for these encryption types GSS_Wrap_AEAD() with no associated
+ data has an identical output to GSS_Wrap().
 \end_layout
 
 \begin_layout Subsection
@@ -1145,6 +1141,9 @@ The output cipherstate from the encrypt-with-ad and decrypt-with-ad functions
 The use of application-managed cipherstate allows the per-message token
  size be reduced by omitting the confounder and encrypted copy of the token
  header.
+ There is no limit on the number or size of messages that can be protected
+ beyond those imposed by the sequence number size and the underlying cryptosyste
+m.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1241,8 +1240,8 @@ Because native AEAD encryption types lack an explicit checksum operation,
  MIC tokens are generated similarly to Wrap tokens, using the encrypt-with-ad
  function passing the to-be-signed data as the associated data and using
  a plaintext length of zero.
- Even though the same derived key is used, the key usage and initialization
- vector serve to disambiguate MIC from Wrap tokens.
+ The key usage and initialization vector serve to disambiguate MIC from
+ Wrap tokens.
  The octet string output by the encrypt-with-ad function contains the authentica
 tion tag, which is placed in the SGN_CKSUM field of the token.
 \end_layout
@@ -1254,29 +1253,29 @@ name "sub:DCE"
 
 \end_inset
 
-GSS_C_DCE_STYLE
+DCE RPC Interoperability
 \end_layout
 
 \begin_layout Standard
-For interoperability with SSPI, existing implementations that support GSS_C_DCE_
-STYLE always set EC for Wrap tokens with confidentiality to the underlying
- cipher's block size (16 bytes for AES), and use an effective Right Rotation
+Existing implementations that support the GSS_C_DCE_STYLE context flag will,
+ when this flag is in set, set EC for Wrap tokens with confidentiality to
+ the underlying cipher's block size and use an effective Right Rotation
  Count (RRC) of EC + RRC bytes.
  This document does not specify otherwise.
 \end_layout
 
 \begin_layout Standard
-Receivers MUST verify that the otherwise unprotected EC field is the underlying
- cipher's block size for Wrap tokens with confidentiality.
+When GSS_C_DCE_STYLE is set, receivers MUST verify that the otherwise unprotecte
+d EC field is the underlying cipher's block size for Wrap tokens with confidenti
+ality.
  (For Wrap tokens without confidentiality, the EC field remains the length
  of the authentication tag.)
 \end_layout
 
 \begin_layout Standard
 DCE interleaves plaintext and associated data; because native AEAD algorithms
- such as GCM require associated data to be processed before any plaintext,
- any plaintext and associated data must each be coalesced before encrypting
- or decrypting.
+ may require associated data to be processed before any plaintext, any plaintext
+ and associated data must each be coalesced before encrypting or decrypting.
  This document does not specify an API for processing interleaved plaintext
  and associated data.
 \end_layout
@@ -1286,14 +1285,30 @@ Security Considerations
 \end_layout
 
 \begin_layout Standard
-TBD
-\end_layout
-
-\begin_layout Standard
 The combination of a context-specific session key and the presence of the
  the TOK_ID and SND_SEQ fields in the cipherstate guarantees that the key/IV
  combination is safe from reuse.
- The allows modes like GCM to be used securely.
+ The allows native AEAD modes such as 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+GCM
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+CCM
+\end_layout
+
+\end_inset
+
+ to be used securely.
 \end_layout
 
 \begin_layout Standard
@@ -1301,20 +1316,27 @@ Because the initialization vector has a deterministic (but non-repeating)
  construction, it is safe for use with GCM without any limitation on the
  number of invocations of the authenticated encryption function other than
  that imposed by the requirement that the cipherstate not repeat.
+ (Section 8.3 of 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+GCM
+\end_layout
+
+\end_inset
+
+ imposes an invocation limit of 2^32 where the cipherstate is randomly generated
+ or is a length other than 96 bits.) 
 \end_layout
 
 \begin_layout Standard
 The reordering of plaintext and associated data for GSS_C_DCE_STYLE interoperabi
-lity may be problematic.
+lity may be problematic where the plaintext and associated data lengths
+ are variable.
 \end_layout
 
 \begin_layout Section
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:References"
-
-\end_inset
-
 Normative References
 \end_layout
 
@@ -1347,26 +1369,6 @@ status open
 LatexCommand href
 name "RFC2743"
 target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2743.xml"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Flex BibXML
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset href
-LatexCommand href
-name "RFC3961"
-target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml"
 
 \end_inset
 
@@ -1419,6 +1421,46 @@ target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Flex EmbeddedBibXML
+status open
+
+\begin_layout Plain Layout
+<reference anchor="KRB-AEAD"><front><title>AEAD Encryption Types for Kerberos
+ 5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organiza
+tion>PADL Software</organization></author><date year="2015" month="December"/></
+front></reference>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Informative References
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC3961"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Flex BibXML
 status open
 
@@ -1443,10 +1485,30 @@ target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml"
 status open
 
 \begin_layout Plain Layout
-<reference anchor="KRB-AEAD"><front><title>AEAD Encryption Types for Kerberos
- 5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organiza
-tion>PADL Software</organization></author><date year="2015" month="December"/></
-front></reference>
+<reference anchor="CCM"><front><title>Recommendation for Block Cipher Modes
+ of Operation: The CCM Mode for Authentication and Confidentiality</title><autho
+r initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>Nationa
+l Institute of Standards and Technology</organization></author><date year="2004"
+ month="May"/></front><format type="HTML" target="http://csrc.nist.gov/publication
+s/nistpubs/800-38C/SP-800-38C.pdf"/></reference>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex EmbeddedBibXML
+status open
+
+\begin_layout Plain Layout
+<reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes
+ of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M."
+ surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute
+ of Standards and Technology</organization></author><date year="2007" month="Nov
+ember"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nist
+pubs/800-38D/SP-800-38D.pdf"/></reference>
 \end_layout
 
 \end_inset

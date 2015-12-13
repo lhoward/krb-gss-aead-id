@@ -604,11 +604,11 @@ RFC3961
 
  provides for authenticated encryption of plaintext in Kerberos 5, that
  is, it provides both for confidentiality and a way to check the for integrity
- and authenticity.
- It can be useful in many applications to provide for the integrity and
- authenticity of some Associated Data (AD) that is not encrypted: this is
- termed Authenticated Encryption with Associated Data (AEAD).
- A general description of AEAD is given in 
+ and authenticity of a message.
+ Some applications can benefit from protecting the integrity and authenticity
+ of unencrypted data accompanying a ciphertext: this is termed Authenticated
+ Encryption with Associated Data (AEAD).
+ (A general description of AEAD is given in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -618,13 +618,13 @@ RFC5116
 
 \end_inset
 
-.
+.)
 \end_layout
 
 \begin_layout Standard
 Existing encryption and checksum mechanisms can provide AEAD through generic
- composition, where the checksum protects the concatenated associated data
- and plaintext.
+ composition, where the checksum is made over both the associated data and
+ plaintext.
  Alternatively, modern encryption mechanisms such as those profiled in 
 \begin_inset Flex EntityXRef
 status open
@@ -720,7 +720,7 @@ RFC3962
 
 \end_inset
 
- where the application can reuse the same initial cipherstate, and a random
+ where the application can reuse the same initial cipherstatem, as a random
  confounder obviates the need for an initialization vector.
 \end_layout
 
@@ -730,7 +730,7 @@ To accommodate the use of native AEAD cryptosystems with Kerberos, we allow
  that can guarantee that each invocation of the encryption function with
  a particular key will use a unique cipherstate.
  As an additional constraint, these profiles MUST only be used with session
- keys such as the subkey present in a Kerberos AP-REP.
+ keys such as the subkey present in an AP-REP message.
 \end_layout
 
 \begin_layout Standard
@@ -808,8 +808,8 @@ RFC3961
 \begin_layout Standard
 Applications that support native AEAD ciphers MAY impose a minimum octet
  length requirement on the cipherstate.
- Such applications MUST NOT be used with cryptosystems with a shorter cipherstat
-e length.
+ Such applications MUST NOT be used with ciphers with a shorter cipherstate
+ length.
 \end_layout
 
 \begin_layout Standard
@@ -896,7 +896,7 @@ RFC3961
 
 \end_inset
 
- through generic composition.
+ through the generic composition of the encryption and checksum functions.
 \end_layout
 
 \begin_layout Standard
@@ -1217,10 +1217,10 @@ newstate fixed | counter + 1
 \begin_layout Standard
 The + operator indicates addition of 64-bit integers expressed as eight
  octets in big endian order, raising an error after 2^64 invocations.
- (Note that the application may specify a non-zero initial cipherstate,
- so the implementation must check the invocation count for overflow rather
- than the cipherstate counter.) This composition is compatible with the recommend
-ed nonce formation defined in 
+ (Note that the application may specify a non-zero ial cipherstate, so the
+ implementation must check the invocation count for overflow rather than
+ the cipherstate counter.) This composition is compatible with the recommended
+ nonce formation defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -1741,12 +1741,6 @@ chacha20-poly1305
 \end_layout
 
 \begin_layout Section
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:References"
-
-\end_inset
-
 Normative References
 \end_layout
 
@@ -1779,26 +1773,6 @@ status open
 LatexCommand href
 name "RFC3961"
 target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Flex BibXML
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset href
-LatexCommand href
-name "RFC4537"
-target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml"
 
 \end_inset
 
@@ -1917,6 +1891,26 @@ status open
 LatexCommand href
 name "RFC3962"
 target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex BibXML
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "RFC4537"
+target "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml"
 
 \end_inset
 
