@@ -911,7 +911,18 @@ Application-provided Cipherstate
 
 \begin_layout Standard
 The cipherstate for each invocation of encrypt-with-ad or decrypt-with-ad
- is given as follows:
+ is given as follows.
+ (For consistency with 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC4121
+\end_layout
+
+\end_inset
+
+ the following definition uses 0-based indexing.)
 \end_layout
 
 \begin_layout Standard
