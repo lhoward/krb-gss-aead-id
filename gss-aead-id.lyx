@@ -520,6 +520,8 @@ RFC4121
 
  with support for encryption mechanisms that can authenticate associated
  data such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM).
+ These mechanisms are often more performant and need not expand the message
+ as much as conventional modes.
 \end_layout
 
 \begin_layout Standard
@@ -805,11 +807,11 @@ the encrypt-with-ad and decrypt-with-ad functions are used instead of the
 \end_layout
 
 \begin_layout Itemize
-the input_assoc_data parameter is passed to these functions
+the input_assoc_data parameter is passed as the associated data
 \end_layout
 
 \begin_layout Itemize
-the is-longterm-key parameter is false
+the is-longterm parameter is always false
 \end_layout
 
 \begin_layout Subsection
@@ -883,8 +885,8 @@ Restriction on Native AEAD Usage
 \end_layout
 
 \begin_layout Standard
-Implementations SHALL NOT use native AEAD encryption types where the cipherstate
- length is less than 12 octets (96 bytes).
+Implementations SHALL NOT use native AEAD encryption types where the determinist
+ic cipherstate length is less than 12 octets (96 bytes).
 \end_layout
 
 \begin_layout RevisionRemark
@@ -895,8 +897,9 @@ s that expose the Fixed-Common and Fixed-Distinct nonce components independently
 \end_layout
 
 \begin_layout Standard
-Native AEAD encryption types SHOULD only be negotiated for use in GSS-API
- using the cryptosystem negotiation extension defined in 
+Native AEAD encryption types that do not support long-term keys SHOULD only
+ be negotiated for use in GSS-API using the cryptosystem negotiation extension
+ defined in 
 \begin_inset Flex EntityXRef
 status open
 
@@ -1450,9 +1453,15 @@ status open
 
 \begin_layout Plain Layout
 <reference anchor="KRB-AEAD"><front><title>AEAD Encryption Types for Kerberos
- 5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organiza
-tion>PADL Software</organization></author><date year="2015" month="December"/></
-front></reference>
+ 5</title> <author initials="L." surname="Howard" fullname="Luke Howard">
+ <organization>PADL Software</organization></author><date month="December"
+ year="2015"/> <abstract><t>This document updates [RFC3961] to support encryptio
+n mechanisms that can authenticate associated data, such as Counter with
+ CBC-MAC (CCM) and Galois/Counter Mode (GCM).
+ These mechanisms are often more performant and need not expand the message
+ as much as conventional modes.</t></abstract></front><seriesInfo name="Internet-
+Draft" value="draft-howard-krb-aead-00"/><format type="TXT" target="https://www.i
+etf.org/id/draft-howard-krb-aead-00.txt"/></reference>
 \end_layout
 
 \end_inset
