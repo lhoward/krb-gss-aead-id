@@ -769,6 +769,8 @@ RFC4537
 \end_inset
 
 .
+ Encryption types that only support ephemeral keys SHALL NOT be advertised
+ in protocols that require the use of long-term keys.
 \end_layout
 
 \begin_layout Subsection
