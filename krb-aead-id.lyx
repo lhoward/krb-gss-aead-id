@@ -518,8 +518,10 @@ RFC3961
 
 \end_inset
 
- to support encryption mechanisms that can authenticate associated data
+ to support encryption mechanisms that can authenticate associated data,
  such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM).
+ These mechanisms are often more performant and do not expand the message
+ as much as conventional modes.
 \end_layout
 
 \begin_layout Standard
@@ -557,9 +559,13 @@ RFC3961
  (GCM).
  These mechanisms provide the ability to authenticate additional data associated
  with a plaintext.
- In addition, these mechanisms often have performance advantage over conventiona
-l encryption modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing
- (CTS) as they can be efficiently parallelized.
+\end_layout
+
+\begin_layout Standard
+In addition, these mechanisms often have performance advantage over conventional
+ encryption modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing
+ (CTS) as they can be efficiently parallelized and the absence of a confounder
+ allows for shorter messages.
 \end_layout
 
 \begin_layout Section
@@ -720,22 +726,27 @@ RFC3962
 
 \end_inset
 
- where the application can reuse the same initial cipherstate, as a random
- confounder obviates the need for an initialization vector.
+ where the random confounder (used instead of an initialization vector)
+ need not be non-repeating.
 \end_layout
 
 \begin_layout Standard
 To accommodate the use of native AEAD cryptosystems with Kerberos, we allow
- an encryption mechanism profile to be marked as usable only by applications
- that can guarantee that each invocation of the encryption function with
- a particular key will use a unique cipherstate.
- As an additional constraint, these profiles MUST only be used with session
- keys such as the subkey present in an AP-REP message.
+ an encryption mechanism profile to adjust its behavior depending on whether
+ a long-term is being used.
+ It is valid for a profile to not support long-term keys.
 \end_layout
 
 \begin_layout Standard
-To take advantage of existing cryptosystem negotiation facilities such as
- 
+Where an ephemeral key is used, applications MUST guarantee that each invocation
+ of the encryption function with a particular key will use a unique cipherstate.
+ (An example of an ephemeral key is the subkey present in an AP-REP message.)
+\end_layout
+
+\begin_layout Standard
+Native AEAD encryption types share the same namespace as existing Kerberos
+ algorithms so they may take advantage of existing cryptosystem negotiation
+ facilities such as 
 \begin_inset Flex EntityXRef
 status open
 
@@ -745,10 +756,7 @@ RFC4537
 
 \end_inset
 
-, native AEAD encryption types share the same namespace as existing Kerberos
- algorithms.
- However, they MUST NOT be used with long-term keys or where the initial
- cipherstate is unspecified.
+.
 \end_layout
 
 \begin_layout Subsection
@@ -778,12 +786,17 @@ Native AEAD algorithms do not provide for integrity protection outside of
 \end_layout
 
 \begin_layout Standard
-These algorithms are only appropriate for use with random session keys (which
- can be generated directly), so we remove the requirement that a string-to-key
- function be defined.
+These ciphers are not required to support long-term keys, so we remove the
+ requirement that a string-to-key function be defined.
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Application-managed-Cipherstate"
+
+\end_inset
+
 Application-managed Cipherstate
 \end_layout
 
@@ -799,41 +812,38 @@ RFC3961
 \end_inset
 
  requires that the cipherstate be opaque to the application, we relax this
- so that the application may manage the cipherstate explicitly.
- In order to meet the security requirements of the underlying cryptosystems,
- applications MUST NOT invoke the authenticated encryption function with
- a previously used (key, cipherstate) combination.
+ so that the application may manage some or all of the cipherstate explicitly.
+ Native AEAD ciphers SHALL nominate how many bits of their cipherstate may
+ be deterministic and, by extension, may be managed by the application.
+ (The encryption types defined in this document allow all bits of the cipherstat
+e to be managed by the application.)
 \end_layout
 
 \begin_layout Standard
-Applications that support native AEAD ciphers MAY impose a minimum octet
- length requirement on the cipherstate.
+In order to meet the security requirements of the underlying cryptosystems,
+ applications using ephemeral keys MUST NOT invoke the authenticated encryption
+ function with a previously used (key, cipherstate) combination.
+\end_layout
+
+\begin_layout Standard
+Applications that support native AEAD ciphers MAY impose a minimum deterministic
+ octet length requirement on the cipherstate.
  Such applications MUST NOT be used with ciphers with a shorter cipherstate
  length.
 \end_layout
 
 \begin_layout Standard
-Applications MAY set the cipherstate directly on each invocation of the
- authenticated encryption function.
+Applications MAY set the deterministic cipherstate component directly on
+ each invocation of the authenticated encryption function.
  This allows a non-repeating counter such as a sequence number to be embedded
  in the cipherstate, without preventing the application from processing
  out-of-order messages.
  Alternatively, an application MAY set the initial cipherstate to a random
  value and pass the cipherstate output from the authenticated encryption
  and decryption functions to subsequent invocations.
- Using a randomly generated initial cipherstate may place a limit on the
- number of invocations of the authenticated encryption function when compared
- with a deterministic construction (see 
-\begin_inset Flex EntityXRef
-status open
-
-\begin_layout Plain Layout
-GCM
-\end_layout
-
-\end_inset
-
- Section 8.3).
+ Using a randomly generated cipherstate on each invocation may place a limit
+ on the number of invocations of the authenticated encryption function when
+ compared with a deterministic construction.
 \end_layout
 
 \begin_layout Subsection
@@ -846,13 +856,13 @@ We define the following functions for encrypting and decrypting with associated
 \end_layout
 
 \begin_layout Itemize
-encrypt-with-ad (specific-key, state, associated data, octet string)->(state,
- octet string)
+encrypt-with-ad (specific-key, state, associated data, octet string, is-longterm
+-key)->(state, octet string)
 \end_layout
 
 \begin_layout Itemize
 decrypt-with-ad (specific-key, state, associated data, octet string)->(state,
- octet string)
+ octet string, is-longterm-key)
 \end_layout
 
 \begin_layout Standard
@@ -871,6 +881,11 @@ RFC3961
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+The boolean is-longterm-key parameter indicates whether specific-key is
+ a long-term key or a session key.
 \end_layout
 
 \begin_layout RevisionRemark
@@ -898,6 +913,7 @@ RFC3961
 \end_inset
 
  through the generic composition of the encryption and checksum functions.
+ The is-longterm-key parameter is ignored.
  For consistency with 
 \begin_inset Flex EntityXRef
 status open
@@ -1023,6 +1039,9 @@ Native AEAD Algorithm Profiles
 \begin_layout Standard
 This section defines native AEAD profiles for using the AES-GCM, AES-CCM
  and chacha20-poly1305 algorithms with Kerberos.
+ This specification does not define the encrypt-with-ad and decrypt-with-ad
+ functions for the case where is-longterm-key is true; implementations MUST
+ raise an error if invoked with a long-term key.
 \end_layout
 
 \begin_layout Subsection
@@ -1149,7 +1168,7 @@ The iteration count i is one for AES-128 keys and two for AES-256 keys.
 \begin_layout Subsubsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:KDF-HMAC-SHA2"
+name "sub:KDF-HMAC-SHA256"
 
 \end_inset
 
@@ -1187,7 +1206,7 @@ Ki: HMAC-SHA-256(key, i | label | 0x00 | k)
 \end_layout
 
 \begin_layout Standard
-KDF-HMAC-SHA2(key, label) = k-truncate(K1)
+KDF-HMAC-SHA256(key, label) = k-truncate(K1)
 \end_layout
 
 \begin_layout Subsection
@@ -1204,8 +1223,10 @@ Cipherstate Chaining
 Kerberos applications using native AEAD cryptosystems may choose to explicitly
  compose the cipherstate (for example, from a sequence number).
  However the only requirement imposed by this profile is that the application
- guarantee that the combination of key and cipherstate be unique for a particula
-r invocation of the authenticated encryption function.
+ guarantee that the combination of key and deterministic cipherstate be
+ unique for a particular invocation of the authenticated encryption function.
+ For the encryption types defined in this section, all bits of the cipherstate
+ may be managed by the application.
 \end_layout
 
 \begin_layout Standard
@@ -1251,8 +1272,8 @@ RFC5116
 \end_layout
 
 \begin_layout Standard
-Note that the invocation counter described above is independent of the block
- counter implemented by the underlying encryption function.
+Note also that the invocation counter described above is independent of
+ the block counter implemented by the underlying encryption function.
 \end_layout
 
 \begin_layout Subsection
@@ -1320,12 +1341,12 @@ empty: the empty (zero length) octet string
 
 \begin_layout Standard
 encrypt (specific-key, state, octet string): encrypt-with-ad (specific-key,
- state, empty, octet string)
+ state, empty, octet string, false)
 \end_layout
 
 \begin_layout Standard
 decrypt (specific-key, state, octet string): decrypt-with-ad (specific-key,
- state, empty, octet string)
+ state, empty, octet string, false)
 \end_layout
 
 \begin_layout Subsection
@@ -1435,7 +1456,8 @@ CCM
  tag with a length t of 16 octets (128 bits).
  The nonce length n is 12 octets, and the corresponding counter length q
  is 3 octets.
- 
+ (Note that this imposes a maximum message size of 2^24 blocks, which may
+ be unacceptable to some applications.)
 \end_layout
 
 \begin_layout Standard
@@ -1527,7 +1549,7 @@ key-generation seed length: key size (256 bits)
 key-deriviation function: KDF-HMAC-SHA256 as defined in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:KDF-HMAC-SHA2"
+reference "sub:KDF-HMAC-SHA256"
 
 \end_inset
 
@@ -1550,7 +1572,7 @@ decrypt-with-ad function: AEAD construction of chacha20 with poly1305 using
 \end_layout
 
 \begin_layout Standard
-pseudo random function: PRF = KDF-HMAC-SHA2(base-key, "prf" | octet-string)
+pseudo random function: PRF = KDF-HMAC-SHA256(base-key, "prf" | octet-string)
 \end_layout
 
 \begin_layout Section
@@ -1558,7 +1580,51 @@ Security Considerations
 \end_layout
 
 \begin_layout Standard
-TBD
+This document defines encryption types that would be unsafe when used outside
+ specific applications that are aware of the requirement for non-repeating
+ cipherstate.
+ Implementations that expose 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ programming interfaces may not be able to completely prevent misuse of
+ these encryption types.
+\end_layout
+
+\begin_layout Standard
+Whilst this document abstractly supports the use of native AEAD ciphers
+ with long-term keys, no such encryption types are defined.
+ A future document may specify this, perhaps by deriving unique keys for
+ each invocation of the encryption function.
+\end_layout
+
+\begin_layout Standard
+Counter modes of encryption such as CCM and GCM require that the initialization
+ vector never repeat.
+ Where the application manages the cipherstate, the burden is on the application
+ to ensure this.
+ If the application uses a randomly generated initial cipherstate on each
+ invocation of the authenticated encryption function, then to avoid a birthday
+ attack the number of invocations should be limited to 2^48 (given a 96-bit
+ initialization vector) or less.
+ (Section 8.3 of 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+GCM
+\end_layout
+
+\end_inset
+
+ limits the number of invocations to 2^32 when using GCM with a randomly
+ generated initialization vector.)
 \end_layout
 
 \begin_layout Section

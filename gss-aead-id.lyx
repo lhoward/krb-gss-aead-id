@@ -808,6 +808,10 @@ the encrypt-with-ad and decrypt-with-ad functions are used instead of the
 the input_assoc_data parameter is passed to these functions
 \end_layout
 
+\begin_layout Itemize
+the is-longterm-key parameter is false
+\end_layout
+
 \begin_layout Subsection
 Existing Encryption Types
 \end_layout
