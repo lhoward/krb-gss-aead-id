@@ -520,7 +520,7 @@ RFC3961
 
  to support encryption mechanisms that can authenticate associated data,
  such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM).
- These mechanisms are often more performant and do not expand the message
+ These mechanisms are often more performant and need not expand the message
  as much as conventional modes.
 \end_layout
 
@@ -566,6 +566,18 @@ In addition, these mechanisms often have performance advantage over conventional
  encryption modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing
  (CTS) as they can be efficiently parallelized and the absence of a confounder
  allows for shorter messages.
+ For example, the ciphertext output by the AEAD encryption mechanisms described
+ in this document is 28 bytes shorter than those specified in 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3962
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -857,12 +869,12 @@ We define the following functions for encrypting and decrypting with associated
 
 \begin_layout Itemize
 encrypt-with-ad (specific-key, state, associated data, octet string, is-longterm
--key)->(state, octet string)
+)->(state, octet string)
 \end_layout
 
 \begin_layout Itemize
-decrypt-with-ad (specific-key, state, associated data, octet string)->(state,
- octet string, is-longterm-key)
+decrypt-with-ad (specific-key, state, associated data, octet string, is-longterm
+)->(state, octet string)
 \end_layout
 
 \begin_layout Standard
@@ -883,17 +895,33 @@ RFC3961
 .
 \end_layout
 
-\begin_layout Standard
-The boolean is-longterm-key parameter indicates whether specific-key is
- a long-term key or a session key.
-\end_layout
-
 \begin_layout RevisionRemark
 NB: these functions only allow a single associated data and plaintext buffer
  to be supplied, which is not compatible with applications such as DCE RPC
  that interleave the associated data and plaintext buffers.
  Support for such applications is implementation dependent and not guaranteed
  to work with native AEAD ciphers that only take a single buffer of each.
+\end_layout
+
+\begin_layout Standard
+The boolean is-longterm parameter indicates whether specific-key is a long-term
+ key or a session key.
+\end_layout
+
+\begin_layout Standard
+Correspondingly, the encrypt and decrypt functions are updated to take the
+ is-longterm parameter, which shall be ignored for non-native AEAD encryption
+ types:
+\end_layout
+
+\begin_layout Itemize
+encrypt (specific-key, state, octet string, is-longterm)->(state, octet
+ string)
+\end_layout
+
+\begin_layout Itemize
+decrypt (specific-key, state, octet string, is-longterm)->(state, octet
+ string)
 \end_layout
 
 \begin_layout Subsection
@@ -913,7 +941,7 @@ RFC3961
 \end_inset
 
  through the generic composition of the encryption and checksum functions.
- The is-longterm-key parameter is ignored.
+ The is-longterm parameter is ignored.
  For consistency with 
 \begin_inset Flex EntityXRef
 status open
@@ -1040,7 +1068,7 @@ Native AEAD Algorithm Profiles
 This section defines native AEAD profiles for using the AES-GCM, AES-CCM
  and chacha20-poly1305 algorithms with Kerberos.
  This specification does not define the encrypt-with-ad and decrypt-with-ad
- functions for the case where is-longterm-key is true; implementations MUST
+ functions for the case where is-longterm is true; implementations MUST
  raise an error if invoked with a long-term key.
 \end_layout
 
@@ -1340,13 +1368,13 @@ empty: the empty (zero length) octet string
 \end_layout
 
 \begin_layout Standard
-encrypt (specific-key, state, octet string): encrypt-with-ad (specific-key,
- state, empty, octet string, false)
+encrypt (specific-key, state, octet string, is-longterm): encrypt-with-ad
+ (specific-key, state, empty, octet string, is-longterm)
 \end_layout
 
 \begin_layout Standard
-decrypt (specific-key, state, octet string): decrypt-with-ad (specific-key,
- state, empty, octet string, false)
+decrypt (specific-key, state, octet string, is-longterm): decrypt-with-ad
+ (specific-key, state, empty, octet string, is-longterm)
 \end_layout
 
 \begin_layout Subsection
