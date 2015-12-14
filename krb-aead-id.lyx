@@ -912,8 +912,7 @@ The boolean is-longterm parameter indicates whether specific-key is a long-term
 
 \begin_layout Standard
 Correspondingly, the encrypt and decrypt functions are updated to take the
- is-longterm parameter, which shall be ignored for non-native AEAD encryption
- types:
+ is-longterm parameter:
 \end_layout
 
 \begin_layout Itemize
@@ -924,6 +923,22 @@ encrypt (specific-key, state, octet string, is-longterm)->(state, octet
 \begin_layout Itemize
 decrypt (specific-key, state, octet string, is-longterm)->(state, octet
  string)
+\end_layout
+
+\begin_layout Standard
+A profile that specifices encrypt-with-ad and decrypt-with-ad need not explicitl
+y specify encrypt and decrypt functions.
+ Profiles that adhere to 
+\begin_inset Flex EntityXRef
+status open
+
+\begin_layout Plain Layout
+RFC3961
+\end_layout
+
+\end_inset
+
+ take an implicit value of TRUE for is-longterm.
 \end_layout
 
 \begin_layout Subsection
@@ -1070,7 +1085,7 @@ Native AEAD Algorithm Profiles
 This section defines native AEAD profiles for using the AES-GCM, AES-CCM
  and chacha20-poly1305 algorithms with Kerberos.
  The profiles in this section do not define the encrypt-with-ad and decrypt-with
--ad functions for the case where is-longterm is true; implementations MUST
+-ad functions for the case where is-longterm is TRUE; implementations MUST
  raise an error if invoked with a long-term key.
 \end_layout
 
@@ -1363,20 +1378,6 @@ reference "sub:Cipherstate-chaining"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-empty: the empty (zero length) octet string
-\end_layout
-
-\begin_layout Standard
-encrypt (specific-key, state, octet string, is-longterm): encrypt-with-ad
- (specific-key, state, empty, octet string, is-longterm)
-\end_layout
-
-\begin_layout Standard
-decrypt (specific-key, state, octet string, is-longterm): decrypt-with-ad
- (specific-key, state, empty, octet string, is-longterm)
 \end_layout
 
 \begin_layout Subsection
