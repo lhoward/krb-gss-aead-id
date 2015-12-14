@@ -282,7 +282,7 @@ AEAD Modes for Kerberos GSS-API
 status open
 
 \begin_layout Plain Layout
-draft-howard-gssapi-aead-00
+draft-howard-gssapi-aead-01
 \end_layout
 
 \end_inset
@@ -1460,8 +1460,8 @@ n mechanisms that can authenticate associated data, such as Counter with
  CBC-MAC (CCM) and Galois/Counter Mode (GCM).
  These mechanisms are often more performant and need not expand the message
  as much as conventional modes.</t></abstract></front><seriesInfo name="Internet-
-Draft" value="draft-howard-krb-aead-00"/><format type="TXT" target="https://www.i
-etf.org/id/draft-howard-krb-aead-00.txt"/></reference>
+Draft" value="draft-howard-krb-aead-01"/><format type="TXT" target="https://www.i
+etf.org/id/draft-howard-krb-aead-01.txt"/></reference>
 \end_layout
 
 \end_inset
