@@ -1069,8 +1069,8 @@ Native AEAD Algorithm Profiles
 \begin_layout Standard
 This section defines native AEAD profiles for using the AES-GCM, AES-CCM
  and chacha20-poly1305 algorithms with Kerberos.
- This specification does not define the encrypt-with-ad and decrypt-with-ad
- functions for the case where is-longterm is true; implementations MUST
+ The profiles in this section do not define the encrypt-with-ad and decrypt-with
+-ad functions for the case where is-longterm is true; implementations MUST
  raise an error if invoked with a long-term key.
 \end_layout
 
