@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc tocindent="no"?>
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc tocindent="no"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2743 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2743.xml">
+<!ENTITY RFC4121 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4121.xml">
+<!ENTITY RFC4537 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml">
+<!ENTITY RFC3961 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml">
+<!ENTITY RFC5116 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml">
+]>
+<rfc docName="draft-howard-gssapi-aead-00" ipr="trust200902" category="exp" updates="">
+  <front>
+    <title abbrev="AEAD Modes for Kerberos GSS-API">AEAD Modes for Kerberos GSS-API</title>
+    <author initials="L." surname="Howard" fullname="Luke Howard">
+      <organization abbrev="PADL">PADL Software</organization>
+      <address>
+        <postal>
+          <street>PO Box 59</street>
+          <city>Central Park</city>
+          <region>VIC</region>
+          <code>3145</code>
+          <country>Australia</country>
+        </postal>
+        <email>lukeh@padl.com</email>
+      </address>
+    </author>
+    <date month="December" year="2015"/>
+    <area>
+Security Area
+</area>
+    <keyword>Internet-Draft</keyword>
+    <abstract>
+      <t>
+This document updates 
+RFC4121
+ with support for encryption mechanisms that can authenticate associated data such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM). These mechanisms are often more performant and need not expand the message as much as conventional modes.</t>
+    </abstract>
+  </front>
+  <middle>
+    <section title="Introduction" anchor="sec_Introduction">
+      <t>
+This document updates <xref target="RFC4121"/> with support for encryption mechanisms that support Authenticated Encryption with Associated Data (AEAD). These mechanisms often have performance advantage over conventional encryption modes as they can be efficiently parallelized and do not expand the plaintext when encrypting.</t>
+      <t>
+In addition, this document defines new GSS-API functions for protecting associated data in addition to a plaintext.</t>
+    </section>
+    <section title="Requirements notation" anchor="d1e321">
+      <t>
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119"/>.</t>
+    </section>
+    <section title="Authenticated Encryption with Associated Data (AEAD) Overview" anchor="sec_AEAD">
+      <t>
+The Kerberos 5 GSS-API mechanism specified in <xref target="RFC4121"/> provides for the authenticated encryption of plaintext, that is, it provides both for confidentiality and a way to check the for integrity and authenticity. </t>
+      <t>
+It can be useful in many applications to provide for the integrity and authenticity of some additional unencrypted data; this is termed Authenticated Encryption with Associated Data (AEAD). This can be done by the generic composition of existing encryption and checksum mechanisms, or using algorithms which specifically provide for AEAD (see <xref target="RFC5116"/>). The latter class of algorithms, referred to as native AEAD, may have additional constraints (further described in <xref target="KRB-AEAD"/>).</t>
+    </section>
+    <section title="Updates to RFC 2743" anchor="sec_GSS_Updates">
+      <t><xref target="RFC2743"/> is updated with variations of GSS_Wrap() and GSS_Unwrap() that permit the inclusion of associated data to be authenticated along with a plaintext.</t>
+      <t>
+        <cref>
+TBD: do we allow interleaved plaintext and associated data (which SSPI does and indeed requires for DCE), or do we limit it to a single octet string each? If the former, we need to define GSS_Wrap_IOV instead of GSS_Wrap_AEAD (and the Unwrap equivalents).</cref>
+      </t>
+      <section title="GSS_Wrap_AEAD" anchor="d1e389">
+        <t>
+Inputs:</t>
+        <t>
+          <list style="symbols">
+            <t>
+context_handle CONTEXT HANDLE,</t>
+            <t>
+conf_req_flag BOOLEAN,</t>
+            <t>
+qop_req INTEGER, -- 0 specifies default QOP</t>
+            <t>
+input_assoc_data OCTET STRING, -- associated data</t>
+            <t>
+input_message OCTET STRING -- plaintext</t>
+          </list>
+        </t>
+        <t>
+Outputs:</t>
+        <t>
+          <list style="symbols">
+            <t>
+major_status INTEGER,</t>
+            <t>
+minor_status INTEGER,</t>
+            <t>
+conf_state BOOLEAN,</t>
+            <t>
+output_message OCTET STRING -- caller must release with GSS_Release_buffer()</t>
+          </list>
+        </t>
+        <t>
+Performs the data origin authentication, data integrity and (optionally) data confidentiality functions of GSS_Wrap(), additionally integrity protecting the data in input_assoc_data. Return values are as for GSS_Wrap(). Note that output_message does not include the data in input_assoc_data.</t>
+      </section>
+      <section title="GSS_Unwrap_AEAD" anchor="d1e434">
+        <t>
+Inputs:</t>
+        <t>
+          <list style="symbols">
+            <t>
+context_handle CONTEXT HANDLE,</t>
+            <t>
+input_message OCTET STRING, -- plaintext</t>
+            <t>
+input_assoc_data OCTET STRING -- associated data</t>
+          </list>
+        </t>
+        <t>
+Outputs:</t>
+        <t>
+          <list style="symbols">
+            <t>
+conf_state BOOLEAN,</t>
+            <t>
+qop_state INTEGER,</t>
+            <t>
+major_status INTEGER,</t>
+            <t>
+minor_status INTEGER,</t>
+            <t>
+output_message OCTET STRING -- caller must release with GSS_Release_buffer()</t>
+          </list>
+        </t>
+        <t>
+Processes a data element generated (and optionally encrypted) by GSS_Wrap(), provided as input_message, additionally validating the data origin and integrity of input_assoc_data. Return values are as for GSS_Unwrap(). Note that output_message does not include the data in input_assoc_data.</t>
+      </section>
+    </section>
+    <section title="Updates to RFC 4121" anchor="sec_Krb_Updates">
+      <section title="Support for Associated Data" anchor="d1e483">
+        <t>
+The generation of per-message tokens using the GSS_Wrap_AEAD() and GSS_Unwrap_AEAD() functions is identical to GSS_Wrap() and GSS_Unwrap(), except that:</t>
+        <t>
+          <list style="symbols">
+            <t>
+the encrypt-with-ad and decrypt-with-ad functions are used instead of the encrypt and decrypt functions (respectively)</t>
+            <t>
+the input_assoc_data parameter is passed as the associated data</t>
+            <t>
+the is-longterm parameter is always false</t>
+          </list>
+        </t>
+      </section>
+      <section title="Existing Encryption Types" anchor="d1e503">
+        <t>
+For existing encryption mechanisms that use a generic composition of encryption and checksum functions (such as the Simplified Profile in <xref target="RFC3961"/>), the only operative difference to <xref target="RFC4121"/> is that the associated data is prepended to the plaintext before invoking the checksum function. As such, for these encryption types GSS_Wrap_AEAD() with no associated data has an identical output to GSS_Wrap().</t>
+      </section>
+      <section title="Native AEAD Encryption Types" anchor="sub_AEAD_only">
+        <t>
+When used with native AEAD encryption types as defined in <xref target="KRB-AEAD"/>, the generation of <xref target="RFC4121"/> per-message tokens is modified as described below.</t>
+        <section title="Restriction on Native AEAD Usage" anchor="d1e547">
+          <t>
+Implementations SHALL NOT use native AEAD encryption types where the deterministic cipherstate length is less than 12 octets (96 bytes).</t>
+          <t>
+            <cref>
+TBD: if we want to support CCM with a 32-bit counter, we could remove the Filler byte and reduce the required cipherstate length to 11 octets. However, this may make it more difficult to use TLS-oriented GCM implementations that expose the Fixed-Common and Fixed-Distinct nonce components independently.</cref>
+          </t>
+          <t>
+Native AEAD encryption types that do not support long-term keys SHOULD only be negotiated for use in GSS-API using the cryptosystem negotiation extension defined in <xref target="RFC4537"/>.</t>
+        </section>
+        <section title="Application-provided Cipherstate" anchor="d1e568">
+          <t>
+The cipherstate for each invocation of encrypt-with-ad or decrypt-with-ad is given as follows. (For consistency with <xref target="RFC4121"/> the following definition uses 0-based indexing.)</t>
+          <texttable>
+            <ttcol align="center">
+Octet no</ttcol>
+            <ttcol align="center">
+Name</ttcol>
+            <ttcol align="center">
+Description</ttcol>
+            <c>
+0..1</c>
+            <c>
+TOK_ID</c>
+            <c>
+Identification field, per 
+RFC4121
+ Section 4.2.6 </c>
+            <c>
+2</c>
+            <c>
+Flags</c>
+            <c>
+Attributes field, per 
+RFC4121
+ Section 4.2.6 </c>
+            <c>
+3</c>
+            <c>
+Filler</c>
+            <c>
+One octet of the hex value FF</c>
+            <c>
+4..11</c>
+            <c>
+SND_SEQ</c>
+            <c>
+Sequence number field, per 
+RFC4121
+ Section 4.2.6 </c>
+            <c>
+12..</c>
+            <c>
+</c>
+            <c>
+Remaining octets (if any) are set to zero</c>
+          </texttable>
+          <t>
+The output cipherstate from the encrypt-with-ad and decrypt-with-ad functions is discarded as it is always specified explicitly as described above.</t>
+          <t>
+The use of application-managed cipherstate allows the per-message token size be reduced by omitting the confounder and encrypted copy of the token header. There is no limit on the number or size of messages that can be protected beyond those imposed by the sequence number size and the underlying cryptosystem.</t>
+        </section>
+        <section title="Encryption and Checksum Operations" anchor="d1e710">
+          <t>
+This text amends <xref target="RFC4121"/> Section 4.2.4.</t>
+          <t>
+In Wrap tokens that provide for confidentiality, the first 16 octets of the token (the “header”, as defined in <xref target="RFC4121"/> Section 4.2.6) SHALL NOT be appended to the plaintext data before encryption. Instead, the TOK_ID, Flags and SND_SEQ fields of the token header are protected by the initialization vector (cipherstate). The EC field is unprotected, a change from <xref target="RFC4121"/>. The receiver MUST explicitly validate the EC field. For the native AEAD encryption types profiled in <xref target="KRB-AEAD"/> Section 5, EC SHALL be zero (except when GSS_C_DCE_STYLE is in use, see below). This specification does not support native AEAD encryption types that require the plaintext to be padded.</t>
+          <t>
+In Wrap tokens that do not provide for confidentiality, the first 16 octets of the token SHALL NOT be appended to the to-be-signed plaintext data. As with Wrap tokens that do provide for confidentiality, all fields except EC and RRC are protected by the initialization vector. The receiver MUST validate that EC is the correct constant value. For the AEAD encryption types defined in <xref target="KRB-AEAD"/> Section 5, EC SHALL be sixteen, reflecting the tag length of 16 octets (128 bits).</t>
+          <t>
+Because native AEAD encryption types lack an explicit checksum operation, MIC tokens are generated similarly to Wrap tokens, using the encrypt-with-ad function passing the to-be-signed data as the associated data and using a plaintext length of zero. The key usage and initialization vector serve to disambiguate MIC from Wrap tokens. The octet string output by the encrypt-with-ad function contains the authentication tag, which is placed in the SGN_CKSUM field of the token.</t>
+        </section>
+        <section title="DCE RPC Interoperability" anchor="sub_DCE">
+          <t>
+Existing implementations that support the GSS_C_DCE_STYLE context flag will, when this flag is in set, set EC for Wrap tokens with confidentiality to the underlying cipher's block size and use an effective Right Rotation Count (RRC) of EC + RRC bytes. This document does not specify otherwise.</t>
+          <t>
+When GSS_C_DCE_STYLE is set, receivers MUST verify that the otherwise unprotected EC field is the underlying cipher's block size for Wrap tokens with confidentiality. (For Wrap tokens without confidentiality, the EC field remains the length of the authentication tag.)</t>
+          <t>
+DCE interleaves plaintext and associated data; because native AEAD algorithms may require associated data to be processed before any plaintext, any plaintext and associated data must each be coalesced before encrypting or decrypting. This document does not specify an API for processing interleaved plaintext and associated data.</t>
+        </section>
+      </section>
+    </section>
+    <section title="Security Considerations" anchor="d1e776">
+      <t>
+The combination of a context-specific session key and the presence of the the TOK_ID and SND_SEQ fields in the cipherstate guarantees that the key/IV combination is safe from reuse. The allows native AEAD modes such as <xref target="GCM"/> and <xref target="CCM"/> to be used securely.</t>
+      <t>
+Because the initialization vector has a deterministic (but non-repeating) construction, it is safe for use with GCM without any limitation on the number of invocations of the authenticated encryption function other than that imposed by the requirement that the cipherstate not repeat. (Section 8.3 of <xref target="GCM"/> imposes an invocation limit of 2^32 where the cipherstate is randomly generated or is a length other than 96 bits.) </t>
+      <t>
+The reordering of plaintext and associated data for GSS_C_DCE_STYLE interoperability may be problematic where the plaintext and associated data lengths are variable.</t>
+    </section>
+    <section title="Acknowledgements" anchor="d1e809">
+      <t>
+The author would like to thank the following individuals for their comments and suggestions: Nicolas Williams and Greg Hudson.</t>
+    </section>
+  </middle>
+  <back>
+    <references title="Normative References">&RFC2119;
+&RFC2743;
+&RFC4121;
+&RFC4537;
+
+<reference anchor="KRB-AEAD"><front><title>AEAD Encryption Types for Kerberos 5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organization>PADL Software</organization></author><date month="December" year="2015"/><abstract><t>This document updates [RFC3961] to support encryption mechanisms that can authenticate associated data, such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM). These mechanisms are often more performant and need not expand the message as much as conventional modes.</t></abstract></front><seriesInfo name="Internet-Draft" value="draft-howard-krb-aead-00"/><format type="TXT" target="https://www.ietf.org/id/draft-howard-krb-aead-00.txt"/></reference></references>
+    <references title="Informative References">&RFC3961;
+&RFC5116;
+
+<reference anchor="CCM"><front><title>Recommendation for Block Cipher Modes of Operation: The CCM Mode for Authentication and Confidentiality</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2004" month="May"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38C/SP-800-38C.pdf"/></reference>
+<reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2007" month="November"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf"/></reference></references>
+  </back>
+</rfc>

@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc tocindent="no"?>
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc tocindent="no"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC3961 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml">
+<!ENTITY RFC5116 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml">
+<!ENTITY RFC7539 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7539.xml">
+<!ENTITY RFC3962 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml">
+<!ENTITY RFC4537 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml">
+]>
+<rfc docName="draft-howard-krb-aead-00" ipr="trust200902" category="exp" updates="">
+  <front>
+    <title abbrev="AEAD Encryption Types for Kerberos 5">AEAD Encryption Types for Kerberos 5</title>
+    <author initials="L." surname="Howard" fullname="Luke Howard">
+      <organization abbrev="PADL">PADL Software</organization>
+      <address>
+        <postal>
+          <street>PO Box 59</street>
+          <city>Central Park</city>
+          <region>VIC</region>
+          <code>3145</code>
+          <country>Australia</country>
+        </postal>
+        <email>lukeh@padl.com</email>
+      </address>
+    </author>
+    <date month="December" year="2015"/>
+    <area>
+Security Area
+</area>
+    <keyword>Internet-Draft</keyword>
+    <abstract>
+      <t>
+This document updates 
+RFC3961
+ to support encryption mechanisms that can authenticate associated data, such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM). These mechanisms are often more performant and need not expand the message as much as conventional modes.</t>
+    </abstract>
+  </front>
+  <middle>
+    <section title="Introduction" anchor="sec_Introduction">
+      <t>
+This document updates <xref target="RFC3961"/> for encryption mechanisms that support Authenticated Encryption with Associated Data (AEAD), such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM). These mechanisms provide the ability to authenticate additional data associated with a plaintext.</t>
+      <t>
+In addition, these mechanisms often have performance advantage over conventional encryption modes such as Cipher Block Chaining (CBC) and Ciphertext Stealing (CTS) as they can be efficiently parallelized and the absence of a confounder allows for shorter messages. For example, the ciphertext output by the AEAD encryption mechanisms described in this document is 28 bytes shorter than those specified in <xref target="RFC3962"/>.</t>
+    </section>
+    <section title="Requirements notation" anchor="d1e392">
+      <t>
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119"/>.</t>
+    </section>
+    <section title="Authenticated Encryption with Associated Data (AEAD) Overview" anchor="sec_AEAD">
+      <t><xref target="RFC3961"/> provides for authenticated encryption of plaintext in Kerberos 5, that is, it provides both for confidentiality and a way to check the for integrity and authenticity of a message. Some applications can benefit from protecting the integrity and authenticity of unencrypted data accompanying a ciphertext: this is termed Authenticated Encryption with Associated Data (AEAD). (A general description of AEAD is given in <xref target="RFC5116"/>.)</t>
+      <t>
+Existing encryption and checksum mechanisms can provide AEAD through generic composition, where the checksum is made over both the associated data and plaintext. Alternatively, modern encryption mechanisms such as those profiled in <xref target="RFC5116"/> explicitly provide for AEAD. Both approaches are discussed in this document.</t>
+      <t>
+Algorithms that are specifically designed for AEAD may have additional constraints to be imposed on cryptosystems that would otherwise be definable in terms of <xref target="RFC3961"/>. We term these algorithms native AEAD, to distinguish them from the generic composition of non-AEAD encryption and checksum types.</t>
+    </section>
+    <section title="Updates to RFC 3961" anchor="sec_Updates">
+      <t>
+The changes described below amend <xref target="RFC3961"/> for use with native AEAD encryption types.</t>
+      <section title="Additional Requirements" anchor="d1e466">
+        <t>
+The native AEAD algorithms profiled in <xref target="RFC5116"/> and <xref target="RFC7539"/> have the property where the reuse of a particular combination of secret key and initialization vector destroys all security guarantees of the underlying mechanism. This contrasts with existing Kerberos ciphers such as those defined in <xref target="RFC3962"/> where the random confounder (used instead of an initialization vector) need not be non-repeating.</t>
+        <t>
+To accommodate the use of native AEAD cryptosystems with Kerberos, we allow an encryption mechanism profile to adjust its behavior depending on whether a long-term is being used. It is valid for a profile to not support long-term keys.</t>
+        <t>
+Where an ephemeral key is used, applications MUST guarantee that each invocation of the encryption function with a particular key will use a unique cipherstate. (An example of an ephemeral key is the subkey present in an AP-REP message.)</t>
+        <t>
+Native AEAD encryption types share the same namespace as existing Kerberos algorithms so they may take advantage of existing cryptosystem negotiation facilities such as <xref target="RFC4537"/>.</t>
+      </section>
+      <section title="Removal of Mandatory Requirements" anchor="d1e509">
+        <t><xref target="RFC3961"/> requires that an encryption mechanism profile define both an associated checksum type and a string-to-key function.</t>
+        <t>
+Native AEAD algorithms do not provide for integrity protection outside of authenticated encryption, so we remove the requirement for an associated checksum type. (An application that only requires integrity protection may invoke the authenticated encryption function with a zero length plaintext.)</t>
+        <t>
+These ciphers are not required to support long-term keys, so we remove the requirement that a string-to-key function be defined.</t>
+      </section>
+      <section title="Application-managed Cipherstate" anchor="sub_Application_managed_Cipherstate">
+        <t>
+Whilst <xref target="RFC3961"/> requires that the cipherstate be opaque to the application, we relax this so that the application may manage some or all of the cipherstate explicitly. Native AEAD ciphers SHALL nominate how many bits of their cipherstate may be deterministic and, by extension, may be managed by the application. (The encryption types defined in this document allow all bits of the cipherstate to be managed by the application.)</t>
+        <t>
+In order to meet the security requirements of the underlying cryptosystems, applications using ephemeral keys MUST NOT invoke the authenticated encryption function with a previously used (key, cipherstate) combination.</t>
+        <t>
+Applications that support native AEAD ciphers MAY impose a minimum deterministic octet length requirement on the cipherstate. Such applications MUST NOT be used with ciphers with a shorter cipherstate length.</t>
+        <t>
+Applications MAY set the deterministic cipherstate component directly on each invocation of the authenticated encryption function. This allows a non-repeating counter such as a sequence number to be embedded in the cipherstate, without preventing the application from processing out-of-order messages. Alternatively, an application MAY set the initial cipherstate to a random value and pass the cipherstate output from the authenticated encryption and decryption functions to subsequent invocations. Using a randomly generated cipherstate on each invocation may place a limit on the number of invocations of the authenticated encryption function when compared with a deterministic construction.</t>
+      </section>
+      <section title="Encrypt/decrypt with Associated Data" anchor="d1e556">
+        <t>
+We define the following functions for encrypting and decrypting with associated data:</t>
+        <t>
+          <list style="symbols">
+            <t>
+encrypt-with-ad (specific-key, state, associated data, octet string, is-longterm)-&gt;(state, octet string)</t>
+            <t>
+decrypt-with-ad (specific-key, state, associated data, octet string, is-longterm)-&gt;(state, octet string)</t>
+          </list>
+        </t>
+        <t>
+The associated data parameter is input only and contains data that is to be authenticated, but not encrypted. If the associated data or plaintext are zero length strings, then these functions are equivalent respectively to the checksum and encryption functions described in <xref target="RFC3961"/>.</t>
+        <t>
+          <cref>
+NB: these functions only allow a single associated data and plaintext buffer to be supplied, which is not compatible with applications such as DCE RPC that interleave the associated data and plaintext buffers. Support for such applications is implementation dependent and not guaranteed to work with native AEAD ciphers that only take a single buffer of each.</cref>
+        </t>
+        <t>
+The boolean is-longterm parameter indicates whether specific-key is a long-term key or a session key.</t>
+        <t>
+Correspondingly, the encrypt and decrypt functions are updated to take the is-longterm parameter, which shall be ignored for non-native AEAD encryption types:</t>
+        <t>
+          <list style="symbols">
+            <t>
+encrypt (specific-key, state, octet string, is-longterm)-&gt;(state, octet string)</t>
+            <t>
+decrypt (specific-key, state, octet string, is-longterm)-&gt;(state, octet string)</t>
+          </list>
+        </t>
+      </section>
+      <section title="AEAD with Simplified Profile" anchor="d1e598">
+        <t>
+We allow the authentication of associated data with existing cryptosystems that follow the Simplified Profile defined in <xref target="RFC3961"/> through the generic composition of the encryption and checksum functions. The is-longterm parameter is ignored. For consistency with <xref target="RFC3961"/> the following definition uses 1-based indexing.</t>
+        <t>
+</t>
+        <t>
+          <figure suppress-title="true" align="center">
+            <artwork>encrypt-with-ad    conf = Random string of length c
+                   pad  = Shortest string to bring confounder
+                          and plaintext to a length that's a
+                          multiple of M
+                   (C1, newIV) = E(Ke, conf | plaintext | pad,
+                                   oldstate.ivec)
+                   H1 = HMAC(Ki, conf | associated data |
+                             plaintext | pad)
+                   ciphertext = C1 | H1[1..h]
+                   newstate.ivec = newIV
+
+decrypt-with-ad    (C1, H1) = ciphertext
+                   (P1, newIV) = D(Ke, C1, oldstate.ivec)
+                   conf = P1[1..c]
+                   signdata = conf | associated data | P1[c+1..]
+                   if (H1 != HMAC(Ki, signdata)[1..h]))
+                       report error
+                   newstate.ivec = newIV</artwork>
+          </figure>
+        </t>
+      </section>
+    </section>
+    <section title="Native AEAD Algorithm Profiles" anchor="sec_AEAD_Profiles">
+      <t>
+This section defines native AEAD profiles for using the AES-GCM, AES-CCM and chacha20-poly1305 algorithms with Kerberos. This specification does not define the encrypt-with-ad and decrypt-with-ad functions for the case where is-longterm is true; implementations MUST raise an error if invoked with a long-term key.</t>
+      <section title="Protocol Key Representation" anchor="sub_Protocol_Key_Representation">
+        <t>
+Because the key spaces for the cryptosystems defined below are dense, random or pseudo-random octet strings are used directly as keys.</t>
+      </section>
+      <section title="Key Derivation Functions" anchor="sub_Key_Derivation_Function">
+        <section title="Common Definitions for Key Derivation" anchor="d1e656">
+          <t>
+The key derivation functions from <xref target="SP800-108"/> Section 5 are used.</t>
+          <t>
+            <list style="hanging">
+              <t hangText="key:">
+ The initial session key from which subsequent keys are derived</t>
+              <t hangText="label:">
+ An octet string describing the intended usage of the derived key</t>
+              <t hangText="i:">
+ A counter, expressed as four octets in big endian order</t>
+              <t hangText="k:">
+ The length in bits of the key to be outputted, identical to the length of the original key, expressed as four octets in big endian order.</t>
+              <t hangText="k-truncate:">
+ As defined in <xref target="RFC3961"/> Section 5.1.</t>
+            </list>
+          </t>
+          <t>
+The | operator indicates concatenation.</t>
+        </section>
+        <section title="KDF for AES-GCM and AES-CCM" anchor="sub_KDF_CMAC">
+          <t>
+The GCM and CCM profiles defined below use the counter/feedback key derivation function from <xref target="SP800-108"/> Section 5.2, using CMAC as the PRF with either AES-128 or AES-256 (depending on the input key). The composition is given below:</t>
+          <t>
+            <list style="hanging">
+              <t hangText="K0:">
+ all zero bits</t>
+              <t hangText="Ki:">
+ CMAC(key, K(i-1) | i | label | 0x00 | k)</t>
+            </list>
+          </t>
+          <t>
+KDF-CMAC(key, label) = k-truncate(K1 | K2...)</t>
+          <t>
+The iteration count i is one for AES-128 keys and two for AES-256 keys.</t>
+        </section>
+        <section title="KDF for chacha20-poly1305" anchor="sub_KDF_HMAC_SHA256">
+          <t>
+The chacha20-poly1305 profile defined in  <xref target="sub_chacha20_poly1305"/> uses the counter mode key derivation function from <xref target="SP800-108"/> Section 5.1, using HMAC-SHA-256 as the PRF. The composition is given below:</t>
+          <t>
+            <list style="hanging">
+              <t hangText="K0:">
+ all zero bits</t>
+              <t hangText="Ki:">
+ HMAC-SHA-256(key, i | label | 0x00 | k)</t>
+            </list>
+          </t>
+          <t>
+KDF-HMAC-SHA256(key, label) = k-truncate(K1)</t>
+        </section>
+      </section>
+      <section title="Cipherstate Chaining" anchor="sub_Cipherstate_chaining">
+        <t>
+Kerberos applications using native AEAD cryptosystems may choose to explicitly compose the cipherstate (for example, from a sequence number). However the only requirement imposed by this profile is that the application guarantee that the combination of key and deterministic cipherstate be unique for a particular invocation of the authenticated encryption function. For the encryption types defined in this section, all bits of the cipherstate may be managed by the application.</t>
+        <t>
+An application MAY use the output cipherstate from encrypt-with-ad and decrypt-with-ad in subsequent invocations of those functions. For the profiles defined in this section, the output cipherstate is composed as follows:</t>
+        <t>
+          <list style="hanging">
+            <t hangText="D[N..M]">
+ M - N + 1 octets of D, starting at octet M (1-based)</t>
+            <t hangText="fixed">
+ oldstate[1..4]</t>
+            <t hangText="counter">
+ oldstate[5..12]</t>
+            <t hangText="newstate">
+ fixed | counter + 1</t>
+          </list>
+        </t>
+        <t>
+The + operator indicates addition of 64-bit integers expressed as eight octets in big endian order, raising an error after 2^64 invocations. (Note that the application may specify a non-zero initial cipherstate, so the implementation must check the invocation count for overflow rather than the cipherstate counter.) This composition is compatible with the recommended nonce formation defined in <xref target="RFC5116"/> Section 3.2.</t>
+        <t>
+Note also that the invocation counter described above is independent of the block counter implemented by the underlying encryption function.</t>
+      </section>
+      <section title="Common Profile Definitions" anchor="d1e823">
+        <t>
+The following parameters apply to all the encryption types defined below.</t>
+        <t>
+protocol key format: as defined in  <xref target="sub_Protocol_Key_Representation"/></t>
+        <t>
+specific key structure: one protocol format key, Ke</t>
+        <t>
+required checksum mechanism: none</t>
+        <t>
+key generation functions</t>
+        <t>
+string-to-key function: none</t>
+        <t>
+random-to-key function: identity function</t>
+        <t>
+cipherstate: a 96-bit initialization vector</t>
+        <t>
+initial cipherstate: all bits zero, or specified by application</t>
+        <t>
+subsequent cipherstate: the previous cipherstate incremented by one per  <xref target="sub_Cipherstate_chaining"/></t>
+        <t>
+empty: the empty (zero length) octet string</t>
+        <t>
+encrypt (specific-key, state, octet string, is-longterm): encrypt-with-ad (specific-key, state, empty, octet string, is-longterm)</t>
+        <t>
+decrypt (specific-key, state, octet string, is-longterm): decrypt-with-ad (specific-key, state, empty, octet string, is-longterm)</t>
+      </section>
+      <section title="aes128-gcm-128" anchor="d1e873">
+        <t>
+This profile is based on <xref target="RFC5116"/> Section 5.1. The GCM authenticated encryption algorithm works as specified in <xref target="GCM"/> Section 7, using AES-128 as the block cipher. A key length of 16 octets (128 bits) is used, along with an authentication tag with a length of 16 octets (128 bits).</t>
+        <t>
+The following parameters apply to the aes128-gcm-128 encryption type:</t>
+        <t>
+key-generation seed length: key size (128 bits)</t>
+        <t>
+key-deriviation function: KDF-CMAC as defined in  <xref target="sub_KDF_CMAC"/>. The key usage number is expressed as four octets in big endian order.</t>
+        <t>
+Ke = KDF-CMAC(base-key, usage | 0xAA)</t>
+        <t>
+encrypt-with-ad function: AES encryption in GCM mode using Ke</t>
+        <t>
+decrypt-with-ad function: AES decryption in GCM mode using Ke</t>
+        <t>
+pseudo random function: PRF = KDF-CMAC(base-key, "prf" | octet-string)</t>
+      </section>
+      <section title="aes256-gcm-128" anchor="d1e919">
+        <t>
+As for aes128-gcm-128, but using AES-256 as the block cipher and with key and key-generation seed lengths of 32 octets (256 bits).</t>
+      </section>
+      <section title="aes128-ccm-128" anchor="d1e928">
+        <t>
+This profile is based on <xref target="RFC5116"/> Section 5.3. The CCM authenticated encryption algorithm works as specified in <xref target="CCM"/> Section 6, using AES-128 as the block cipher. A key length of 16 octets (128 bits) is used, along with an authentication tag with a length t of 16 octets (128 bits). The nonce length n is 12 octets, and the corresponding counter length q is 3 octets. (Note that this imposes a maximum message size of 2^24 blocks, which may be unacceptable to some applications.)</t>
+        <t>
+The following parameters apply to the aes128-ccm-128 encryption type:</t>
+        <t>
+key-generation seed length: key size (128 bits)</t>
+        <t>
+key-deriviation function: KDF-CMAC as defined in  <xref target="sub_KDF_CMAC"/>. The key usage number is expressed as four octets in big endian order.</t>
+        <t>
+Ke = KDF-CMAC(base-key, usage | 0xAA)</t>
+        <t>
+encrypt-with-ad function: AES encryption in CCM mode using Ke</t>
+        <t>
+decrypt-with-ad function: AES decryption in CCM mode using Ke</t>
+        <t>
+pseudo random function: PRF = KDF-CMAC(base-key, "prf" | octet-string)</t>
+        <t>
+          <cref>
+TBD: It may be better to use a nonce length of 11 octets (n = 11, q = 4) so the counter length is 32 bits. This would put a more reasonable limit on message size and is compatible with the cipherstate requirements for GSS-API. On the other hand, it may make it more difficult to use TLS-oriented GCM implementations that expose the Fixed-Common and Fixed-Distinct nonce components independently.</cref>
+        </t>
+      </section>
+      <section title="aes256-ccm-128" anchor="d1e977">
+        <t>
+As for aes128-ccm-128, but using AES-256 as the block cipher and with key and key-generation seed lengths of 32 octets (256 bits).</t>
+      </section>
+      <section title="chacha20-poly1305" anchor="sub_chacha20_poly1305">
+        <t>
+This profile is based on <xref target="RFC7539"/> Section 2.8. A key length of 32 octets (256 bits) is used, along with an authentication tag length of 16 octets (128 bits).</t>
+        <t>
+key-generation seed length: key size (256 bits)</t>
+        <t>
+key-deriviation function: KDF-HMAC-SHA256 as defined in  <xref target="sub_KDF_HMAC_SHA256"/>. The key usage number is expressed as four octets in big endian order.</t>
+        <t>
+Ke = KDF-HMAC-SHA256(base-key, usage | 0xAA)</t>
+        <t>
+encrypt-with-ad function: AEAD construction of chacha20 with poly1305 using Ke</t>
+        <t>
+decrypt-with-ad function: AEAD construction of chacha20 with poly1305 using Ke</t>
+        <t>
+pseudo random function: PRF = KDF-HMAC-SHA256(base-key, "prf" | octet-string)</t>
+      </section>
+    </section>
+    <section title="Security Considerations" anchor="d1e1025">
+      <t>
+This document defines encryption types that would be unsafe when used outside specific applications that are aware of the requirement for non-repeating cipherstate. Implementations that expose <xref target="RFC3961"/> programming interfaces may not be able to completely prevent misuse of these encryption types.</t>
+      <t>
+Whilst this document abstractly supports the use of native AEAD ciphers with long-term keys, no such encryption types are defined. A future document may specify this, perhaps by deriving unique keys for each invocation of the encryption function.</t>
+      <t>
+Counter modes of encryption such as CCM and GCM require that the initialization vector never repeat. Where the application manages the cipherstate, the burden is on the application to ensure this. If the application uses a randomly generated initial cipherstate on each invocation of the authenticated encryption function, then to avoid a birthday attack the number of invocations should be limited to 2^48 (given a 96-bit initialization vector) or less. (Section 8.3 of <xref target="GCM"/> limits the number of invocations to 2^32 when using GCM with a randomly generated initialization vector.)</t>
+    </section>
+    <section title="IANA Considerations" anchor="d1e1052">
+      <t>
+IANA is requested to assign:</t>
+      <texttable>
+        <ttcol align="center">
+Etype</ttcol>
+        <ttcol align="center">
+Encryption type</ttcol>
+        <ttcol align="center">
+Reference</ttcol>
+        <c>
+TBD1</c>
+        <c>
+aes128-gcm-128</c>
+        <c>
+[this document]</c>
+        <c>
+TBD2</c>
+        <c>
+aes256-gcm-128</c>
+        <c>
+[this document]</c>
+        <c>
+TBD3</c>
+        <c>
+aes128-ccm-128</c>
+        <c>
+[this document]</c>
+        <c>
+TBD4</c>
+        <c>
+aes256-ccm-128</c>
+        <c>
+[this document]</c>
+        <c>
+TBD4</c>
+        <c>
+chacha20-poly1305</c>
+        <c>
+[this document]</c>
+      </texttable>
+    </section>
+    <section title="Acknowledgements" anchor="d1e1163">
+      <t>
+The author would like to thank the following individuals for their comments and suggestions: Nicolas Williams and Greg Hudson.</t>
+    </section>
+  </middle>
+  <back>
+    <references title="Normative References">&RFC2119;
+&RFC3961;
+&RFC5116;
+&RFC7539;
+
+<reference anchor="CCM"><front><title>Recommendation for Block Cipher Modes of Operation: The CCM Mode for Authentication and Confidentiality</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2004" month="May"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38C/SP-800-38C.pdf"/></reference>
+<reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2007" month="November"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf"/></reference>
+<reference anchor="SP800-108"><front><title>Recommendation for Key Derivation Using Pseudorandom Functions</title><author initials="L." surname="Chen" fullname="Lily Chen"><organization>National Institute of Standards and Technology</organization></author><date year="2009" month="October"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-108/sp800-108.pdf"/></reference></references>
+    <references title="Informative References">&RFC3962;
+&RFC4537;
+</references>
+  </back>
+</rfc>
