@@ -32,7 +32,7 @@
         <email>lukeh@padl.com</email>
       </address>
     </author>
-    <date day="16" month="January" year="2022"/>
+    <date day="16" month="January" year="2023"/>
     <area>
 Security Area
 </area>
@@ -153,7 +153,7 @@ decrypt-with-ad    (C1, H1) = ciphertext
     </section>
     <section title="Native AEAD Algorithm Profiles" anchor="sec_AEAD_Profiles">
       <t>
-This section defines native AEAD profiles for using the AES-GCM, AES-CCM AES-OCB, and chacha20-poly1305 algorithms with Kerberos. This specification does not define the encrypt-with-ad and decrypt-with-ad functions for the case where is-longterm is true; implementations MUST raise an error if invoked with a long-term key.</t>
+This section defines native AEAD profiles for using the AES-GCM, AES-CCM, AES-OCB, and chacha20-poly1305 algorithms and modes with Kerberos. This specification does not define the encrypt-with-ad and decrypt-with-ad functions for the case where is-longterm is true; implementations MUST raise an error if invoked with a long-term key.</t>
       <section title="Protocol Key Representation" anchor="sub_Protocol_Key_Representation">
         <t>
 Because the key spaces for the cryptosystems defined below are dense, random or pseudo-random octet strings are used directly as keys.</t>
@@ -324,7 +324,7 @@ As for aes128-ccm-128, but using AES-256 as the block cipher and with key and ke
       </section>
       <section title="aes128-ocb-128" anchor="sub_aes128_ocb_128">
         <t>
-This profile is based on <xref target="RFC5116"/> Section 5.3. The OCB authenticated encryption algorithm works as specified in <xref target="RFC7253"/> Section 6, using AES-128 as the block cipher. A key length of 16 octets (128 bits) is used, along with an authentication tag with a length t of 16 octets (128 bits). The nonce length n is 12 octets.</t>
+This profile is based on <xref target="RFC5116"/> Section 5.3. The OCB authenticated encryption algorithm works as specified in <xref target="RFC7253"/> Section 6, using AES-128 as the block cipher. A key length of 16 octets (128 bits) is used, along with an authentication tag with a length TAGLEN of 16 octets (128 bits). The nonce length bitlen(N) is 96 bits.</t>
         <t>
 The following parameters apply to the aes128-ocb-128 encryption type:</t>
         <t>
