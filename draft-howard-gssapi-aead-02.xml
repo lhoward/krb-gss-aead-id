@@ -38,7 +38,7 @@ Security Area
     <keyword>Internet-Draft</keyword>
     <abstract>
       <t>
-This document updates RFC4121 with support for encryption mechanisms that can authenticate associated data such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM). These mechanisms are often more performant and need not expand the message as much as conventional modes.</t>
+This document updates RFC4121 with support for encryption mechanisms that can authenticate associated data such as Counter with CBC-MAC (CCM), Galois/Counter Mode (GCM) and OCB. These mechanisms are often more performant and need not expand the message as much as conventional modes.</t>
     </abstract>
   </front>
   <middle>
@@ -239,7 +239,7 @@ DCE interleaves plaintext and associated data; because native AEAD algorithms ma
     </section>
     <section title="Security Considerations" anchor="d1e776">
       <t>
-The combination of a context-specific session key and the presence of the token header fields in the cipherstate guarantees that the key/IV combination is safe from reuse. The allows native AEAD modes such as <xref target="GCM"/> and <xref target="CCM"/> to be used securely.</t>
+The combination of a context-specific session key and the presence of the token header fields in the cipherstate guarantees that the key/IV combination is safe from reuse. The allows native AEAD modes such as <xref target="GCM"/>, <xref target="CCM"/> and <xref target="RFC7253"/> to be used securely.</t>
       <t>
 Because the initialization vector has a deterministic (but non-repeating) construction, it is safe for use with GCM without any limitation on the number of invocations of the authenticated encryption function other than that imposed by the requirement that the cipherstate not repeat. (Section 8.3 of <xref target="GCM"/> imposes an invocation limit of 2^32 where the cipherstate is randomly generated or is a length other than 96 bits.) </t>
       <t>When using native AEAD encryption types, the EC and RRC fields are unprotected, however they are well known constants which can be validated by the peer.</t>
@@ -260,6 +260,7 @@ The author would like to thank the following individuals for their comments and 
 <reference anchor="KRB-AEAD"><front><title>AEAD Encryption Types for Kerberos 5</title><author initials="L." surname="Howard" fullname="Luke Howard"><organization>PADL Software</organization></author><date month="December" year="2015"/><abstract><t>This document updates [RFC3961] to support encryption mechanisms that can authenticate associated data, such as Counter with CBC-MAC (CCM) and Galois/Counter Mode (GCM). These mechanisms are often more performant and need not expand the message as much as conventional modes.</t></abstract></front><seriesInfo name="Internet-Draft" value="draft-howard-krb-aead-00"/><format type="TXT" target="https://www.ietf.org/id/draft-howard-krb-aead-00.txt"/></reference></references>
     <references title="Informative References">&RFC3961;
 &RFC5116;
+&RFC7253;
 
 <reference anchor="CCM"><front><title>Recommendation for Block Cipher Modes of Operation: The CCM Mode for Authentication and Confidentiality</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2004" month="May"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38C/SP-800-38C.pdf"/></reference>
 <reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2007" month="November"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf"/></reference></references>
