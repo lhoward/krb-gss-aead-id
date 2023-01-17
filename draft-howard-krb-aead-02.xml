@@ -11,6 +11,7 @@
 <!ENTITY RFC2119 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC3961 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3961.xml">
 <!ENTITY RFC3962 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3962.xml">
+<!ENTITY RFC4401 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4401.xml">
 <!ENTITY RFC4537 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4537.xml">
 <!ENTITY RFC5116 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5116.xml">
 <!ENTITY RFC7253 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7253.xml">
@@ -67,11 +68,10 @@ Algorithms that are specifically designed for AEAD may have additional constrain
 The changes described below amend <xref target="RFC3961"/> for use with native AEAD encryption types.</t>
       <section title="Additional Requirements" anchor="d1e466">
         <t>
-The native AEAD algorithms profiled in <xref target="RFC5116"/> and <xref target="RFC7539"/> have the property where the reuse of a particular combination of secret key and initialization vector destroys all security guarantees of the underlying mechanism. This contrasts with existing Kerberos ciphers such as those defined in <xref target="RFC3962"/> where the random confounder (used instead of an initialization vector) need not be non-repeating.</t>
+The native AEAD algorithms profiled in <xref target="RFC5116"/> and <xref target="RFC7539"/> have the property where the reuse of a particular combination of secret key and initialization vector destroys all security guarantees of the underlying mechanism. This contrasts with existing Kerberos ciphers such as those defined in <xref target="RFC3962"/> where the random confounder (used instead of an initialization vector) need not be non-repeating. Applications using these native AEAD algorithms MUST guarantee that each invocation of the encryption function with a particular key uses a unique cipherstate.</t>
         <t>
 To accommodate the use of native AEAD cryptosystems with Kerberos, we allow an encryption mechanism profile to adjust its behavior depending on whether a long-term is being used. It is valid for a profile to not support long-term keys.</t>
-        <t>
-Where an ephemeral key is used, applications MUST guarantee that each invocation of the encryption function with a particular key will use a unique cipherstate. (An example of an ephemeral key is the subkey present in an AP-REP message.)</t>
+	<t>Non-long-term keys are termed ephemeral keys. An example of an ephemeral key is the subkey present in an AP-REP message, or the output of a PRF such as the one defined in <xref target="RFC4401"/>.</t>
         <t>
 Native AEAD encryption types share the same namespace as existing Kerberos algorithms so they may take advantage of existing cryptosystem negotiation facilities such as <xref target="RFC4537"/>.</t>
       </section>
@@ -439,6 +439,7 @@ The author would like to thank the following individuals for their comments and 
 <reference anchor="GCM"><front><title>Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC</title><author initials="M." surname="Dworkin" fullname="Morris Dworkin"><organization>National Institute of Standards and Technology</organization></author><date year="2007" month="November"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf"/></reference>
 <reference anchor="SP800-108"><front><title>Recommendation for Key Derivation Using Pseudorandom Functions</title><author initials="L." surname="Chen" fullname="Lily Chen"><organization>National Institute of Standards and Technology</organization></author><date year="2009" month="October"/></front><format type="HTML" target="http://csrc.nist.gov/publications/nistpubs/800-108/sp800-108.pdf"/></reference></references>
     <references title="Informative References">&RFC3962;
+&RFC4401;
 &RFC4537;
 </references>
   </back>
